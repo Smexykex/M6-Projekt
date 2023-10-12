@@ -1,0 +1,55 @@
+def checkStartupInput(userInput):
+    if userInput not in ["l", "q"]:
+        while True:
+            print("Invalid option, try again")
+            print()
+            print("l) Log in")
+            print("q) Quit")
+            print()
+            tempInput = input("Option: ")
+            if tempInput in ["l", "q"]:
+                break
+    return tempInput
+    
+def startup():
+    print("Welcome to Lagra (TM)")
+    print()
+    print("l) Log in")
+    print("q) Quit")
+    print()
+    startupChoice = input("Option: ")
+    if checkStartupInput(startupChoice) == "q":
+        print("Program exited")
+    else:
+        loggedIn = logIn()
+        if loggedIn == "q":
+            print("Restarting Program")
+            startup()
+
+def isLoginValid(inputName, inputPassword):
+    if (inputName in users) and (inputpassword in users[password]):
+        return True
+    return False
+
+def logIn():
+    inputUsername = input("Username: ")
+    inputPassword = input("Password: ")
+    while not isLoginValid(inputName, inputPassword):
+        print("Invalid username or password")
+        print("r Try again")
+        print("q Quit")
+        print()
+        newInput = input("Option: ")
+        if newInput not in ["r", "q"]:
+            print("Invalid choice")
+        elif newInput == "q":
+            loggedIn = newInput
+            break
+        else:
+            inputUsername = input("Username: ")
+            inputPassword = input("Password: ")
+    
+    loggedIn = inputName        #logga in och visa items
+    return loggenIn
+
+startup()
