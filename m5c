@@ -83,3 +83,32 @@ users = {
             "inventory":[],
             },
         }
+
+
+
+#NY KOD ATT KOPIERA
+def nowLoggedIn(name):
+    print(f"Welcome {name}")
+    print()
+    displayInventory(name)
+    while True:
+        print("Select an action")
+        print()
+        print("a) Add item")
+        print("r) Remove item")
+        print("l) List items")
+        print("q) Log out")
+        print()
+        selectedAction = input("Option: ")
+        if selectedAction not in ["a","r", "l","q"]
+            print("Invalid choice, try again")
+        elif selectedActio == "a":
+            addItem(name)
+        #elif selectedActio == "r":
+            #removeItem(name)
+        elif selectedActio == "l":
+            displayInventory(name)
+        else:
+            print("Logging out")
+            break
+    startup()
