@@ -10,6 +10,29 @@ def playerAction(validInputs):
         print("Invalid input!")
 
 
+
+def displayOptions(validInputs):
+    print()
+    for string in validInputs[0:-1]:
+        print('{:^10}'.format(string), end='')
+    print("\n")
+
+
+def displayStats():
+    a = {
+    "type":"Wyvern",
+    "health":150,
+    "attack":35,
+    "defence":15,
+    "dexterity":50,
+    }
+
+for stat, value in a.items():
+    print('{:<10}'.format(stat), end=':')
+    print('{:>10}'.format(value), end='')
+    print()
+    
+    
 def attack(attacker, reciver):
     # Every point of dex increaces your dodge chance by 1%, starting at 0%
     hit = random.randint(1, 100) > reciver["dexterity"]
@@ -17,14 +40,14 @@ def attack(attacker, reciver):
         # Every point in defence reduces damage taken by 1
         damage = attacker["attack"] - reciver["defence"]
         reciver["health"] -= damage
-        
         print(f'{attacker["type"]} deals {damage} damage to {reciver["type"]}!\n')
+        
     else:
         print(f'{attacker["type"]} missed {reciver["type"]}!\n')
 
 
 # Returns "victory" if the playter won and "defeat" if they lost
-def battle(player, monster):
+def battle(monster):
     while True:
         # Player attacks
         attack(player, monster)
@@ -35,7 +58,6 @@ def battle(player, monster):
         # Monster attacks
         attack(monster, player)
         if player["health"] <= 0:
-            print("Defeat! You return home\n")
             return "defeat"
     
     
@@ -65,7 +87,7 @@ def adventure():
             }
         }
 
-    validInputs = ["explore", "status", "return home", "help"]
+    validInputs = ["explore", "status", "return", "help"]
     while True:
         action = playerAction(validInputs)
         match action:
@@ -75,20 +97,21 @@ def adventure():
                 randomMonster = monsterList[random.randint(1, 3)]
                 
                 print(f'You encounter a {randomMonster["type"]}!\n')
-                result = battle(player, randomMonster.copy())
+                result = battle(randomMonster.copy())
                 if result == "defeat":
+                    print("Defeat! You return home\n")
                     return
                 
             # Shows status of player
             case "status":
                 print(f'\n{player}\n')
                 
-            case "return home":
+            case "return":
                 print("You return home\n")
                 return
             
             case "help":
-                print(validInputs[0:-1])
+                displayOptions(validInputs)
         
     
 def game():
@@ -98,6 +121,7 @@ def game():
     global player
     player = {
         "type":"Player",
+        "maxHealth":150,
         "health":150,
         "attack":50,
         "defence":25,
@@ -112,7 +136,7 @@ def game():
             case "adventure":
                 print("\nAdventure awaits!\n")
                 adventure()
-                player["health"] = 150
+                player["health"] = player["maxHealth"]
                 
             # Shows status of player
             case "status":
@@ -123,5 +147,5 @@ def game():
                 return
             
             case "help":
-                print(validInputs[0:-1])
+                displayOptions(validInputs)
     

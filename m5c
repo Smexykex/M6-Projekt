@@ -1,3 +1,16 @@
+def displayInventory(user):
+    print("\nThese are your items\n")
+    for count, item in enumerate(user["inventory"]):
+        print(f'{count+1}) {item}')
+    print()
+
+
+def addItem(user):
+    item = input("Add item: ")
+    user["inventory"].append(item)
+    
+    displayInventory(user)
+            
 def checkStartupInput(userInput):
     if userInput not in ["l", "q"]:
         while True:
@@ -25,16 +38,29 @@ def startup():
         if loggedIn == "q":
             print("Restarting Program")
             startup()
+            
+            
+        
 
 def isLoginValid(inputName, inputPassword):
-    if (inputName in users) and (inputpassword in users[password]):
-        return True
+    loginUser = (inputName, inputPassword)
+    
+    for i in range(len(users)):
+        if loginUser = users[i+1]["login"]:
+            return True
     return False
 
+
 def logIn():
-    inputUsername = input("Username: ")
-    inputPassword = input("Password: ")
-    while not isLoginValid(inputName, inputPassword):
+    while True:
+        inputUsername = input("Username: ")
+        inputPassword = input("Password: ")
+        loginUser = (inputName, inputPassword)
+        
+        for i in range(len(users)):
+        if loginUser = users[i+1]["login"]:
+            return users[i+1]["login"]
+        
         print("Invalid username or password")
         print("r Try again")
         print("q Quit")
@@ -43,13 +69,17 @@ def logIn():
         if newInput not in ["r", "q"]:
             print("Invalid choice")
         elif newInput == "q":
-            loggedIn = newInput
-            break
-        else:
-            inputUsername = input("Username: ")
-            inputPassword = input("Password: ")
-    
-    loggedIn = inputName        #logga in och visa items
-    return loggenIn
+            return newInput
 
-startup()
+
+global users
+users = {
+        1:{
+            "login":("nisse", "asd123"),
+            "inventory":[],
+            },
+        2:{
+            "login":("abba", "das123"),
+            "inventory":[],
+            },
+        }
