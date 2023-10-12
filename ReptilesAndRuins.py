@@ -10,27 +10,18 @@ def playerAction(validInputs):
         print("Invalid input!")
 
 
-
+def displayStats():
+    for stat, value in player.items():
+        print('{:<10}'.format(stat), end=':')
+        print('{:>10}'.format(value), end='')
+        print()
+    
+    
 def displayOptions(validInputs):
     print()
     for string in validInputs[0:-1]:
         print('{:^10}'.format(string), end='')
     print("\n")
-
-
-def displayStats():
-    a = {
-    "type":"Wyvern",
-    "health":150,
-    "attack":35,
-    "defence":15,
-    "dexterity":50,
-    }
-
-for stat, value in a.items():
-    print('{:<10}'.format(stat), end=':')
-    print('{:>10}'.format(value), end='')
-    print()
     
     
 def attack(attacker, reciver):
