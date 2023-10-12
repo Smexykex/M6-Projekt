@@ -12,6 +12,8 @@ def playerAction(validInputs):
 
 def displayStats():
     for stat, value in player.items():
+        if stat == "type":
+            continue
         print('{:<10}'.format(stat), end=':')
         print('{:>10}'.format(value), end='')
         print()
@@ -26,11 +28,11 @@ def displayOptions(validInputs):
     
 def attack(attacker, reciver):
     # Every point of dex increaces your dodge chance by 1%, starting at 0%
-    hit = random.randint(1, 100) > reciver["dexterity"]
+    hit = random.randint(1, 100) > reciver["Dexterity"]
     if hit:
         # Every point in defence reduces damage taken by 1
-        damage = attacker["attack"] - reciver["defence"]
-        reciver["health"] -= damage
+        damage = attacker["Attack"] - reciver["Defence"]
+        reciver["Health"] -= damage
         print(f'{attacker["type"]} deals {damage} damage to {reciver["type"]}!\n')
         
     else:
@@ -42,13 +44,13 @@ def battle(monster):
     while True:
         # Player attacks
         attack(player, monster)
-        if monster["health"] <= 0:
+        if monster["Health"] <= 0:
             print("Victory!\n")
             return "victory"
         
         # Monster attacks
         attack(monster, player)
-        if player["health"] <= 0:
+        if player["Health"] <= 0:
             return "defeat"
     
     
@@ -57,24 +59,24 @@ def adventure():
     monsterList = {
         1:{
             "type":"Wyvern",
-            "health":150,
-            "attack":35,
-            "defence":15,
-            "dexterity":50,
+            "Health":150,
+            "Attack":35,
+            "Defence":15,
+            "Dexterity":50,
             },
         2:{
             "type":"Golem",
-            "health":300,
-            "attack":35,
-            "defence":40,
-            "dexterity":0,
+            "Health":300,
+            "Attack":35,
+            "Defence":40,
+            "Dexterity":0,
             },
         3:{
             "type":"Dragon",
-            "health":250,
-            "attack":40,
-            "defence":30,
-            "dexterity":15,
+            "Health":250,
+            "Attack":40,
+            "Defence":30,
+            "Dexterity":15,
             }
         }
 
@@ -112,11 +114,11 @@ def game():
     global player
     player = {
         "type":"Player",
-        "maxHealth":150,
-        "health":150,
-        "attack":50,
-        "defence":25,
-        "dexterity":30,
+        "Max Health":150,
+        "Health":150,
+        "Attack":50,
+        "Defence":25,
+        "Dexterity":30,
         }
     
     validInputs = ["adventure", "status", "exit", "help"]
@@ -127,11 +129,11 @@ def game():
             case "adventure":
                 print("\nAdventure awaits!\n")
                 adventure()
-                player["health"] = player["maxHealth"]
+                player["Health"] = player["Max Health"]
                 
             # Shows status of player
             case "status":
-                print(f'{player}\n')
+                displayStats()
                 
             case "exit":
                 print("\nGoodbye!")
