@@ -28,14 +28,14 @@ def displayInventory():
         print()
     print('Coins:' + '{:^10}'.format(player["Coins"]))
     print()
-    
+
+
 def displayOptions(validInputs):
-    print()
     for string in validInputs[0:-1]:
-        print('{:^10}'.format(string), end='')
+        print(string, end='  ')
     print("\n")
     
-    
+
 def attack(attacker, reciver):
     # Every point of dex increaces your dodge chance by 1%, starting at 0%
     hit = random.randint(1, 100) > reciver["Dexterity"]
@@ -63,9 +63,8 @@ def battle(monster):
         attack(monster, player)
         if player["Health"] <= 0:
             return "defeat"
-    
-    
-    
+
+
 def adventure():
     print("Adventure awaits!\n")
     
@@ -125,18 +124,46 @@ def adventure():
                 displayOptions(validInputs)
 
 
-def enterShop():
-    print("Welcome to my shop!")
+def buyWares(wares):
+    validInputs = []
+    for item in wares:
+        validInputs.append(item)
+    validInputs += ["exit", "help"]
+    
+    print("What would you like to buy? ")
+    for item in wares:
+        print('{:<15}'.format(f"{item}) {wares[item][0]}"), end=':')
+        print('{:>10}'.format(wares[item][1]), end='')
+        print()
+    print()
+    
+    while True:
+        action = playerAction(validInputs)
+        if action == "exit":
+            return
+        
+        elif action == "help":
+            displayOptions(validInputs)
+        
+        else:
+            if wares[action][1] <= player["Coins"]:
+                print(f'You bought {wares[action][0]}\n')
+                player["Inventory"].append(wares[action][0])
+                player["Coins"] -= wares[action][1]
+            
+            else:
+                print("You don't have enough money!\n")
+        
+
+def enterShop(wares):
+    print("Welcome to my shop!\n")
     
     validInputs = ["buy", "sell", "status", "inventory", "exit", "help"]
     while True:
         action = playerAction(validInputs)
         match action:
             case "buy":
-                # Opens i list of items you can buy
-                
-            case "sell":
-                # Opens i list of items you can sell
+                buyWares(wares)
                 
             case "status":
                 displayStats()
@@ -145,7 +172,7 @@ def enterShop():
                 displayInventory()
                 
             case "exit":
-                print("Goodbye!")
+                print("Come again!\n")
                 return
             
             case "help":
@@ -153,7 +180,8 @@ def enterShop():
     
 
 def game():
-    print("Welcome to Replies and Ruins!")
+    print("Welcome to Replies and Ruins!\n")
+    print("type 'help' for a list of avalible commands!\n")
     
     # Players stats
     global player
@@ -177,8 +205,9 @@ def game():
                 adventure()
                 player["Health"] = player["Max Health"]
             
-            case "shop"
-                enterShop()
+            case "shop":
+                wares = {"1":("Potion", 30), "2":("Iron Sword", 150), "3":("Iron Shield", 200), "4":("Iron Armour", 300)}
+                enterShop(wares)
                 
             # Shows status of player
             case "status":
@@ -188,9 +217,11 @@ def game():
                 displayInventory()
                 
             case "exit":
-                print("Goodbye!")
+                print("Exited game")
                 return
             
             case "help":
                 displayOptions(validInputs)
-    
+
+
+game()
