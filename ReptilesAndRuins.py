@@ -3,12 +3,18 @@ import random
 #call with sleep(), argument is ~seconds to wait
 from time import sleep
 
+def roll100():
+    return random.randint(1, 100)
+
+
 def playerAction(validInputs, doWhat):
     while True:
         if doWhat == "buy":
             playerInput = input("What would you like to buy? ")
         elif doWhat == "sell":
             playerInput = input("What would you like to sell? ")
+        elif doWhat == "where":
+            playerInput = input("Where would you like to go? ")
         else: #misc
             playerInput = input("What would you like to do? ")
         
@@ -62,25 +68,77 @@ def attack(attacker, reciver):
 
 # Returns "victory" if the playter won and "defeat" if they lost
 def battle(monster):
+    tempMonster = dict(monster)
+    print(f'You encounter a {tempMonster["type"]}!\n')
+    sleep(2)
     while True:
         # Player attacks
-        attack(player, monster)
+        attack(player, tempMonster)
         sleep(0.3)
-        if monster["Health"] <= 0:
-            player["Coins"] += monster["Coins"]
-            print("Victory!\n")
+        if tempMonster["Health"] <= 0:
+            player["Coins"] += tempMonster["Coins"]
+            print("Victory!")
+            print(f"{tempMonster['Coins']} coins have been acquired!\n")
             return "victory"
         
         # Monster attacks
         attack(monster, player)
         sleep(0.3)
         if player["Health"] <= 0:
+            print("Defeat! After managing to flee from combat, you return home\n")
             return "defeat"
 
 
+def newHighlands():
+    chanceForEncounter = roll100()
+    chanceForHerb = roll100()
+    if not (chanceForEncounter > 30 or chanceForHerb > 50):
+        sleep(1)
+        print("After a long and uneventful trek, you haven't come across anything of value.")
+        print("You decide to return back to the crossroads.\n")
+        return
+
+    if chanceForEncounter > 30:
+        #start encounter with wyvern
+        result = battle(monsterList[1])
+        if result == "defeat":
+            return result
+
+    if chanceForHerb > 50:
+        validInputs = ["harvest", "return", "help"]
+        sleep(1)
+        print("You stumble upon a rare herb\n")
+        while True:
+            action = playerAction(validInputs, "misc")
+            match action:
+                case "harvest":
+                    chanceForHarvest = roll100()
+                    if chanceForHarvest > 20:
+                        player["Inventory"].append("Rare Herb")
+                        print("Harvest sucessful, added Herb to inventory\n")
+                    else:
+                        print("Harvest unsuccessful, the herb was damaged beyond usability\n")
+                    break
+
+                case "return":
+                    break
+                
+                case "help":
+                    displayOptions(validInputs)
+    sleep(1)
+    print("You return back to the crossroads\n")
+    return 
+
+
+#def newMines():
+    #TBD
+
+
 def adventure():
-    print("Adventure awaits!\n")
-    
+    print("Adventure awaits!")
+    print("You find yourself at a crossroad\n")
+    #WOULD WANT TO PUT THIS IN A SEPARATE FILE LATER
+    global monsterList
     monsterList = {
         1:{
             "type":"Wyvern",
@@ -108,29 +166,35 @@ def adventure():
             }
         }
 
-    validInputs = ["explore", "status", "inventory", "return", "help"]
+    validInputs = ["wilds", "highlands", "status", "inventory", "home", "help"]
     while True:
-        action = playerAction(validInputs, "misc")
+        action = playerAction(validInputs, "where")
         match action:
-            case "explore":
+            case "wilds":
                 # Pick a random monster from the monsterList and battles it
                 # Stops the adventure if the player loses
                 randomMonster = monsterList[random.randint(1, 3)]
-                
-                print(f'You encounter a {randomMonster["type"]}!\n')
-                sleep(2)
                 result = battle(randomMonster.copy())
                 if result == "defeat":
-                    print("Defeat! After managing to flee from combat, you return home\n")
                     return
-                
+            
+            case "highlands":
+                result = newHighlands()
+                if result == "defeat":
+                    return
+            
+            case "mines":
+                result = newMines()
+                if result == "defeat":
+                    return
+            
             case "status":
                 displayStats()
                 
             case "inventory":
                 displayInventory()
                 
-            case "return":
+            case "home":
                 print("You return home\n")
                 return
             
