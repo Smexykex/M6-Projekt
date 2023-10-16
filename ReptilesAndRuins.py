@@ -1,8 +1,17 @@
 import random
+#manual delay can be added between print()s to help the player follow along
+#call with sleep(), argument is ~seconds to wait
+from time import sleep
 
-def playerAction(validInputs):
+def playerAction(validInputs, doWhat):
     while True:
-        playerInput = input("What would you like to do? ")
+        if doWhat == "buy":
+            playerInput = input("What would you like to buy? ")
+        elif doWhat == "sell":
+            playerInput = input("What would you like to sell? ")
+        else: #misc
+            playerInput = input("What would you like to do? ")
+        
         print()
         # Return the input if it's valid
         if playerInput in validInputs:
@@ -22,12 +31,14 @@ def displayStats():
 
 
 def displayInventory():
+    print('Coins:' + '{:^10}'.format(player["Coins"]))
+    
     for count, item in enumerate(player["Inventory"]):
         print('{:^5}'.format(count+1), end=':')
         print('{:^10}'.format(item), end='')
         print()
-    print('Coins:' + '{:^10}'.format(player["Coins"]))
     print()
+
 
 
 def displayOptions(validInputs):
@@ -54,6 +65,7 @@ def battle(monster):
     while True:
         # Player attacks
         attack(player, monster)
+        sleep(0.3)
         if monster["Health"] <= 0:
             player["Coins"] += monster["Coins"]
             print("Victory!\n")
@@ -61,6 +73,7 @@ def battle(monster):
         
         # Monster attacks
         attack(monster, player)
+        sleep(0.3)
         if player["Health"] <= 0:
             return "defeat"
 
@@ -97,7 +110,7 @@ def adventure():
 
     validInputs = ["explore", "status", "inventory", "return", "help"]
     while True:
-        action = playerAction(validInputs)
+        action = playerAction(validInputs, "misc")
         match action:
             case "explore":
                 # Pick a random monster from the monsterList and battles it
@@ -105,9 +118,10 @@ def adventure():
                 randomMonster = monsterList[random.randint(1, 3)]
                 
                 print(f'You encounter a {randomMonster["type"]}!\n')
+                sleep(2)
                 result = battle(randomMonster.copy())
                 if result == "defeat":
-                    print("Defeat! You return home\n")
+                    print("Defeat! After managing to flee from combat, you return home\n")
                     return
                 
             case "status":
@@ -130,7 +144,8 @@ def buyWares(wares):
         validInputs.append(item)
     validInputs += ["exit", "help"]
     
-    print("What would you like to buy? ")
+    print(f"You have {player['Coins']} coins.")
+    print("<Items in stock> ")
     for item in wares:
         print('{:<15}'.format(f"{item}) {wares[item][0]}"), end=':')
         print('{:>10}'.format(wares[item][1]), end='')
@@ -138,7 +153,7 @@ def buyWares(wares):
     print()
     
     while True:
-        action = playerAction(validInputs)
+        action = playerAction(validInputs, "buy")
         if action == "exit":
             return
         
@@ -153,17 +168,25 @@ def buyWares(wares):
             
             else:
                 print("You don't have enough money!\n")
-        
+
+
+#def sellWares(inventory):
+    #make a check at some point to see if the chosen item/which items are sellableitems 
+    #import sell value 
+
 
 def enterShop(wares):
     print("Welcome to my shop!\n")
     
     validInputs = ["buy", "sell", "status", "inventory", "exit", "help"]
     while True:
-        action = playerAction(validInputs)
+        action = playerAction(validInputs, "misc")
         match action:
             case "buy":
                 buyWares(wares)
+
+            #case "sell":
+                #sellWares(inventory)
                 
             case "status":
                 displayStats()
@@ -198,7 +221,7 @@ def game():
     
     validInputs = ["adventure", "shop", "status", "inventory", "exit", "help"]
     while True:
-        action = playerAction(validInputs)
+        action = playerAction(validInputs, "misc")
         match action:
             # Starts an adventure. Restores the players health when they return
             case "adventure":
@@ -206,7 +229,11 @@ def game():
                 player["Health"] = player["Max Health"]
             
             case "shop":
-                wares = {"1":("Potion", 30), "2":("Iron Sword", 150), "3":("Iron Shield", 200), "4":("Iron Armour", 300)}
+                wares = {
+                    "1":("Potion", 30), 
+                    "2":("Iron Sword", 150), 
+                    "3":("Iron Shield", 200), 
+                    "4":("Iron Armour", 300)}
                 enterShop(wares)
                 
             # Shows status of player
