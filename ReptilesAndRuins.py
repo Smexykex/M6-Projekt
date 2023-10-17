@@ -30,6 +30,7 @@ def displayStats():
     for stat, value in player.items():
         if stat in ["type", "Inventory", "Coins"]:
             continue
+        
         print('{:<10}'.format(stat), end=':')
         print('{:>10}'.format(value), end='')
         print()
@@ -41,7 +42,7 @@ def displayInventory():
     
     for count, item in enumerate(player["Inventory"]):
         print('{:^5}'.format(count+1), end=':')
-        print('{:^10}'.format(item), end='')
+        print('{:^15}'.format(item["Name"]), end='')
         print()
     print()
 
@@ -204,15 +205,15 @@ def adventure():
 
 def buyWares(wares):
     validInputs = []
-    for item in wares:
+    for item in wares.keys():
         validInputs.append(item)
     validInputs += ["exit", "help"]
     
     print(f"You have {player['Coins']} coins.")
     print("<Items in stock> ")
-    for item in wares:
-        print('{:<15}'.format(f"{item}) {wares[item][0]}"), end=':')
-        print('{:>10}'.format(wares[item][1]), end='')
+    for item in wares.values():
+        print('{:<15}'.format(item["Name"]), end=':')
+        print('{:>10}'.format(item["Cost"]), end='')
         print()
     print()
     
@@ -225,16 +226,43 @@ def buyWares(wares):
             displayOptions(validInputs)
         
         else:
-            if wares[action][1] <= player["Coins"]:
-                print(f'You bought {wares[action][0]}\n')
-                player["Inventory"].append(wares[action][0])
-                player["Coins"] -= wares[action][1]
+            if wares[action]["Cost"] <= player["Coins"]:
+                print(f'You bought {wares[action]["Name"]}\n')
+                player["Inventory"].append(wares[action])
+                player["Coins"] -= wares[action]["Cost"]
             
             else:
                 print("You don't have enough money!\n")
 
 
-#def sellWares(inventory):
+def sellWares():
+    validInputs = []
+    for item in player["Inventory"]:
+        validInputs.append(item["Name"])
+    validInputs += ["exit", "help"]
+    
+    print(f"You have {player['Coins']} coins.")
+    print("<Items in inventory> ")
+    for item in player["Inventory"]:
+        print('{:<15}'.format(item["Name"]), end=':')
+        print('{:>10}'.format(item["Sell Price"]), end='')
+        print()
+    print()
+    
+    while True:
+        action = playerAction(validInputs, "sell")
+        if action == "exit":
+            return
+        
+        elif action == "help":
+            displayOptions(validInputs)
+        
+        else:
+            for count, item in enumerate(player["Inventory"]):
+                if action == item["Name"]:
+                    print(f'You sold {item["Name"]}\n')
+                    player["Coins"] += item["Sell Price"]
+                    player["Inventory"].pop(count)
     #make a check at some point to see if the chosen item/which items are sellableitems 
     #import sell value 
 
@@ -249,8 +277,8 @@ def enterShop(wares):
             case "buy":
                 buyWares(wares)
 
-            #case "sell":
-                #sellWares(inventory)
+            case "sell":
+                sellWares()
                 
             case "status":
                 displayStats()
@@ -274,8 +302,8 @@ def game():
     global player
     player = {
         "type":"Player",
-        "Inventory":["Potion"],
-        "Coins":100,
+        "Inventory":[],
+        "Coins":200,
         "Max Health":150,
         "Health":150,
         "Attack":50,
@@ -294,10 +322,11 @@ def game():
             
             case "shop":
                 wares = {
-                    "1":("Potion", 30), 
-                    "2":("Iron Sword", 150), 
-                    "3":("Iron Shield", 200), 
-                    "4":("Iron Armour", 300)}
+                    "Potion":{"Name":"Potion", "Cost":30, "Sell Price":20}, 
+                    "Iron Sword":{"Name":"Iron Sword", "Cost":150, "Sell Price":75}, 
+                    "Iron Shield":{"Name":"Iron Shield", "Cost":200, "Sell Price":100}, 
+                    "Iron Armour":{"Name":"Iron Armour", "Cost":300, "Sell Price":150}
+                    }
                 enterShop(wares)
                 
             # Shows status of player
