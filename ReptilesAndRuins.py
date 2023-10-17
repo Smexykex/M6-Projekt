@@ -3,8 +3,8 @@ import random
 #call with sleep(), argument is ~seconds to wait
 from time import sleep
 
-def roll100():
-    return random.randint(1, 100)
+def dice(upperNumber):
+    return random.randint(1, upperNumber)
 
 
 def playerAction(validInputs, doWhat):
@@ -90,8 +90,8 @@ def battle(monster):
 
 
 def newHighlands():
-    chanceForEncounter = roll100()
-    chanceForHerb = roll100()
+    chanceForEncounter = dice(100)
+    chanceForHerb = dice(100)
     if not (chanceForEncounter > 30 or chanceForHerb > 50):
         sleep(1)
         print("After a long and uneventful trek, you haven't come across anything of value.")
@@ -105,17 +105,17 @@ def newHighlands():
             return result
 
     if chanceForHerb > 50:
-        validInputs = ["harvest", "return", "help"]
         sleep(1)
         print("You stumble upon a rare herb\n")
+        validInputs = ["harvest", "return", "help"]
         while True:
             action = playerAction(validInputs, "misc")
             match action:
                 case "harvest":
-                    chanceForHarvest = roll100()
+                    chanceForHarvest = dice(100)
                     if chanceForHarvest > 20:
                         player["Inventory"].append("Rare Herb")
-                        print("Harvest sucessful, added Herb to inventory\n")
+                        print("Harvest successful, added Herb to inventory\n")
                     else:
                         print("Harvest unsuccessful, the herb was damaged beyond usability\n")
                     break
@@ -127,11 +127,37 @@ def newHighlands():
                     displayOptions(validInputs)
     sleep(1)
     print("You return back to the crossroads\n")
-    return 
 
 
-#def newMines():
-    #TBD
+def newMines():
+    chanceForEncounter = dice(100)
+    if chanceForEncounter > 20:
+        #start encounter with golem or troll
+        whichMonster = random.choice([2, 4])
+        result = battle(monsterList[whichMonster])
+        if result == "defeat":
+            return result
+        
+    for chanceForGeode in range(2):
+        roll = dice(100)
+        if roll > 70:
+            sleep(1)
+            print("As you are walking, you hit your foot on an unusually light-weight rock.")
+            validInputs = ["take", "return", "help"]
+            while True:
+                action = playerAction(validInputs, "misc")
+                match action:
+                    case "take":
+                        player["Inventory"].append("Uncracked Geode")
+                        print("You pick up an uncracked geode\n")
+                        break
+                    case "return":
+                        print("You return back to the crossroads\n")
+                        return 
+                    case "help":
+                        displayOptions(validInputs)
+    sleep(1)
+    print("You return back to the crossroads\n")
 
 
 def adventure():
@@ -163,10 +189,18 @@ def adventure():
             "Defence":30,
             "Dexterity":15,
             "Coins":100
+            },
+        4:{
+            "type":"Troll",
+            "Health":90,
+            "Attack":40,
+            "Defence":25,
+            "Dexterity":20,
+            "Coins":25
             }
         }
 
-    validInputs = ["wilds", "highlands", "status", "inventory", "home", "help"]
+    validInputs = ["wilds", "highlands", "mines", "status", "inventory", "home", "help"]
     while True:
         action = playerAction(validInputs, "where")
         match action:
