@@ -9,14 +9,15 @@ def dice(upperNumber):
 
 def playerAction(validInputs, doWhat):
     while True:
-        if doWhat == "buy":
-            playerInput = input("What would you like to buy? ")
-        elif doWhat == "sell":
-            playerInput = input("What would you like to sell? ")
-        elif doWhat == "where":
-            playerInput = input("Where would you like to go? ")
-        else: #misc
-            playerInput = input("What would you like to do? ")
+        match doWhat:
+            case "buy":
+                playerInput = input("What would you like to buy? ")
+            case "sell":
+                playerInput = input("What would you like to sell? ")
+            case "where":
+                playerInput = input("Where would you like to go? ")
+            case _: #misc
+                playerInput = input("What would you like to do? ")
         
         print()
         # Return the input if it's valid
@@ -89,9 +90,54 @@ def battle(monster):
             return "defeat"
 
 
+def foundHerb():
+    sleep(1)
+    print("You stumble upon a rare herb\n")
+    validInputs = ["harvest", "return", "help"]
+    while True:
+        action = playerAction(validInputs, "misc")
+        match action:
+            case "harvest":
+                chanceForHarvest = dice(100)
+                if chanceForHarvest > 20:
+                    player["Inventory"].append("Rare Herb")
+                    print("Harvest successful, added Herb to inventory\n")
+                else:
+                    print("Harvest unsuccessful, the herb was damaged beyond usability\n")
+                break
+
+            case "return":
+                break
+            
+            case "help":
+                displayOptions(validInputs)
+
+
+def foundGeode(number):
+    sleep(1)
+    if number == 0:
+        print("As you are walking, you hit your foot on an unusually light-weight rock.")
+    else:
+        print("Distracted by the geode you just found, you hit you other foot on another one..")
+    validInputs = ["take", "return", "help"]
+    while True:
+        action = playerAction(validInputs, "misc")
+        match action:
+            case "take":
+                player["Inventory"].append("Uncracked Geode")
+                print("You pick up an uncracked geode\n")
+                break
+            case "return":
+                print("You return back to the crossroads\n")
+                return 
+            case "help":
+                displayOptions(validInputs)
+
+
 def newHighlands():
     chanceForEncounter = dice(100)
     chanceForHerb = dice(100)
+    #fail on both event rolls
     if not (chanceForEncounter > 30 or chanceForHerb > 50):
         sleep(1)
         print("After a long and uneventful trek, you haven't come across anything of value.")
@@ -105,26 +151,7 @@ def newHighlands():
             return result
 
     if chanceForHerb > 50:
-        sleep(1)
-        print("You stumble upon a rare herb\n")
-        validInputs = ["harvest", "return", "help"]
-        while True:
-            action = playerAction(validInputs, "misc")
-            match action:
-                case "harvest":
-                    chanceForHarvest = dice(100)
-                    if chanceForHarvest > 20:
-                        player["Inventory"].append("Rare Herb")
-                        print("Harvest successful, added Herb to inventory\n")
-                    else:
-                        print("Harvest unsuccessful, the herb was damaged beyond usability\n")
-                    break
-
-                case "return":
-                    break
-                
-                case "help":
-                    displayOptions(validInputs)
+        foundHerb()
     sleep(1)
     print("You return back to the crossroads\n")
 
@@ -138,24 +165,12 @@ def newMines():
         if result == "defeat":
             return result
         
+    #maybe needs changing, to be able to do if != any of event rolls, 
+    # return with special print message
     for chanceForGeode in range(2):
         roll = dice(100)
         if roll > 70:
-            sleep(1)
-            print("As you are walking, you hit your foot on an unusually light-weight rock.")
-            validInputs = ["take", "return", "help"]
-            while True:
-                action = playerAction(validInputs, "misc")
-                match action:
-                    case "take":
-                        player["Inventory"].append("Uncracked Geode")
-                        print("You pick up an uncracked geode\n")
-                        break
-                    case "return":
-                        print("You return back to the crossroads\n")
-                        return 
-                    case "help":
-                        displayOptions(validInputs)
+            foundGeode(chanceForGeode)
     sleep(1)
     print("You return back to the crossroads\n")
 
