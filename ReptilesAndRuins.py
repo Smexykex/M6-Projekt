@@ -48,12 +48,17 @@ def displayInventory():
     print()
 
 
+def inventoryIndex(checkItem):
+    for count, item in enumerate(player["Inventory"]):
+        if item["Name"] == checkItem:
+            return count
+    
 
 def displayOptions(validInputs):
     for string in validInputs[0:-1]:
         print(string, end='  ')
     print("\n")
-    
+
 
 def attack(attacker, reciver):
     # Every point of dex increaces your dodge chance by 1%, starting at 0%
@@ -66,22 +71,59 @@ def attack(attacker, reciver):
         
     else:
         print(f'{attacker["type"]} missed {reciver["type"]}!\n')
-
+        
 
 # Returns "victory" if the playter won and "defeat" if they lost
 def battle(monster):
+    validInputs = ["attack", "use potion", "inventory", "status", "run", "help"]
     tempMonster = dict(monster)
     print(f'You encounter a {tempMonster["type"]}!\n')
     sleep(2)
+    
     while True:
-        # Player attacks
-        attack(player, tempMonster)
-        sleep(0.3)
-        if tempMonster["Health"] <= 0:
-            player["Coins"] += tempMonster["Coins"]
-            print("Victory!")
-            print(f"{tempMonster['Coins']} coins have been acquired!\n")
-            return "victory"
+        # Player's turn
+        while True:
+            action = playerAction(validInputs, "misc")
+            match action:
+                case "attack":
+                    attack(player, monster)
+                    sleep(0.3)
+                    if tempMonster["Health"] <= 0:
+                        player["Coins"] += tempMonster["Coins"]
+                        print("Victory!")
+                        print(f"{tempMonster['Coins']} coins have been acquired!\n")
+                        return "victory"
+                    
+                    break
+                
+                            
+                case "use potion":
+                    if inventoryIndex("Potion") == None:
+                        print("You don't have any potions!\n")
+                            
+                    else:
+                        print("You use a potion\n")
+                        player["Health"] += 30
+                        if player["Health"] > player["Max Health"]:
+                            player["Health"] = player["Max Health"]
+                                    
+                        player["Inventory"].pop(inventoryIndex("Potion"))
+                        break
+                    
+                
+                case "inventory":
+                    displayInventory()
+                    
+                case "status":
+                    displayStats()
+                    
+                case "run":
+                    if dice(100) > player["Dexteriry"]:
+                        print("You successfully run away")
+                        break
+                    
+                case "help":
+                    displayOptions(validInputs)
         
         # Monster attacks
         attack(monster, player)
@@ -312,6 +354,7 @@ def sellWares():
                     print(f'You sold {item["Name"]}\n')
                     player["Coins"] += item["Sell Price"]
                     player["Inventory"].pop(count)
+                    break
     #make a check at some point to see if the chosen item/which items are sellableitems 
     #import sell value 
 
