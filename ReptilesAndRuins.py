@@ -60,6 +60,37 @@ def displayOptions(validInputs):
     print("\n")
 
 
+def equipItem():
+    validInputs = []
+    equipment_list = []
+    for count, item in enumerate(player["Inventory"]):
+        if item["Equipable"]:
+            equipment_list.append(item)
+            validInputs.append(item["Name"])
+    validInputs += ["exit", "help"] 
+                
+    if len(equipment_list) == 0:
+        print("You don't have anything to equip!")
+        return
+                
+    while True:
+        action = playerAction(validInputs, "misc")
+        if action == "exit":
+            return
+        
+        elif action == "help":
+            displayOptions(validInputs)
+        
+        else:
+            for count, item in enumerate(player["Inventory"]):
+                if action == item["Name"]:
+                    player["Attack"] += item["Attack Modifier"]
+                    player["Defence"] += item["Defence Modifier"]
+                    player["Inventory"].pop(count)
+                    return
+            
+    
+    
 def attack(attacker, reciver):
     # Every point of dex increaces your dodge chance by 1%, starting at 0%
     hit = random.randint(1, 100) > reciver["Dexterity"]
@@ -73,57 +104,65 @@ def attack(attacker, reciver):
         print(f'{attacker["type"]} missed {reciver["type"]}!\n')
         
 
-# Returns "victory" if the playter won and "defeat" if they lost
-def battle(monster):
+def playerTurn(monster):
     validInputs = ["attack", "use potion", "inventory", "status", "run", "help"]
+    while True:
+        action = playerAction(validInputs, "misc")
+        match action:
+            case "attack":
+                attack(player, monster)
+                return
+
+            case "use potion":
+                if inventoryIndex("Potion") == None:
+                    print("You don't have any potions!\n")
+                    return
+            
+                print("You use a potion\n")
+                player["Health"] += 50
+                if player["Health"] > player["Max Health"]:
+                    player["Health"] = player["Max Health"]
+                                    
+                player["Inventory"].pop(inventoryIndex("Potion"))
+                return
+            
+            case "run":
+                if dice(100) > player["Dexteriry"]:
+                    print("You successfully ran away!")
+                    return "ran away"
+                
+                print("You falied to run away!")
+                
+            case "inventory":
+                displayInventory()
+                    
+            case "status":
+                displayStats()
+                    
+                    
+            case "help":
+                displayOptions(validInputs)
+    
+    
+# Returns "defeat" if the player lost the battle and "ran away" if they ran form the battle
+def battle(monster):
     tempMonster = dict(monster)
     print(f'You encounter a {tempMonster["type"]}!\n')
     sleep(2)
     
     while True:
         # Player's turn
-        while True:
-            action = playerAction(validInputs, "misc")
-            match action:
-                case "attack":
-                    attack(player, monster)
-                    sleep(0.3)
-                    if tempMonster["Health"] <= 0:
-                        player["Coins"] += tempMonster["Coins"]
-                        print("Victory!")
-                        print(f"{tempMonster['Coins']} coins have been acquired!\n")
-                        return "victory"
-                    
-                    break
-                
-                            
-                case "use potion":
-                    if inventoryIndex("Potion") == None:
-                        print("You don't have any potions!\n")
-                            
-                    else:
-                        print("You use a potion\n")
-                        player["Health"] += 30
-                        if player["Health"] > player["Max Health"]:
-                            player["Health"] = player["Max Health"]
-                                    
-                        player["Inventory"].pop(inventoryIndex("Potion"))
-                        break
-                    
-                
-                case "inventory":
-                    displayInventory()
-                    
-                case "status":
-                    displayStats()
-                    
-                case "run":
-                    if dice(100) > player["Dexteriry"]:
-                        print("You successfully run away")
-                        break
-                    
-                case "help":
-                    displayOptions(validInputs)
+        turn = playerTurn(tempMonster)
+        sleep(0.3)
+        
+        if tempMonster["Health"] <= 0:
+            player["Coins"] += tempMonster["Coins"]
+            print("Victory!")
+            print(f"{tempMonster['Coins']} coins have been acquired!\n")
+            return
+        
+        elif turn == "ran away":
+            return "ran away"
         
         # Monster attacks
         attack(monster, player)
@@ -190,7 +229,7 @@ def newHighlands():
     if chanceForEncounter > 30:
         #start encounter with wyvern
         result = battle(monsterList[1])
-        if result == "defeat":
+        if result in ["defeat", "ran away"]:
             return result
 
     if chanceForHerb > 50:
@@ -205,7 +244,7 @@ def newMines():
         #start encounter with golem or troll
         whichMonster = random.choice([2, 4])
         result = battle(monsterList[whichMonster])
-        if result == "defeat":
+        if result in ["defeat", "ran away"]:
             return result
         
     #maybe needs changing, to be able to do if != any of event rolls, 
@@ -267,17 +306,17 @@ def adventure():
                 # Stops the adventure if the player loses
                 randomMonster = monsterList[random.randint(1, 3)]
                 result = battle(randomMonster.copy())
-                if result == "defeat":
+                if result in ["defeat", "ran away"]:
                     return
             
             case "highlands":
                 result = newHighlands()
-                if result == "defeat":
+                if result in ["defeat", "ran away"]:
                     return
             
             case "mines":
                 result = newMines()
-                if result == "defeat":
+                if result in ["defeat", "ran away"]:
                     return
             
             case "status":
@@ -403,7 +442,7 @@ def game():
         "Dexterity":30
         }
     
-    validInputs = ["adventure", "shop", "status", "inventory", "exit", "help"]
+    validInputs = ["adventure", "shop", "status", "inventory", "equip", "exit", "help"]
     while True:
         action = playerAction(validInputs, "misc")
         match action:
@@ -415,9 +454,9 @@ def game():
             case "shop":
                 wares = {
                     "Potion":{"Name":"Potion", "Cost":30, "Sell Price":20}, 
-                    "Iron Sword":{"Name":"Iron Sword", "Cost":150, "Sell Price":75}, 
-                    "Iron Shield":{"Name":"Iron Shield", "Cost":200, "Sell Price":100}, 
-                    "Iron Armour":{"Name":"Iron Armour", "Cost":300, "Sell Price":150}
+                    "Iron Sword":{"Name":"Iron Sword", "Equipable":True, "Attack Modifier":15, "Defence Modifier":0, "Cost":150, "Sell Price":75}, 
+                    "Iron Shield":{"Name":"Iron Shield", "Equipable":True, "Attack Modifier":0, "Defence Modifier":5, "Cost":200, "Sell Price":100}, 
+                    "Iron Armour":{"Name":"Iron Armour", "Equipable":True, "Attack Modifier":0, "Defence Modifier":10, "Cost":300, "Sell Price":150}
                     }
                 enterShop(wares)
                 
@@ -427,6 +466,9 @@ def game():
             
             case "inventory":
                 displayInventory()
+            
+            case "equip":
+                equipItem()
                 
             case "exit":
                 print("Exited game")
