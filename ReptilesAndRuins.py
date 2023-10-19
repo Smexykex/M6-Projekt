@@ -31,8 +31,8 @@ from time import sleep
 from termcolor import colored, cprint
 # colorama might be needed to make terminal color work on Windows, 
 # termcolor is the actual code
-# import colorama
-# colorama.init()
+import colorama
+colorama.init()
 
 # Colored text will only work with cprint(), 
 # and you cannot do input(cprint("test", "red")) since cprint() always returns none.
@@ -141,8 +141,8 @@ def battle(monster):
                     sleep(0.3)
                     if tempMonster["Health"] <= 0:
                         player["Coins"] += tempMonster["Coins"]
-                        print("Victory!")
-                        print(f"{tempMonster['Coins']} coins have been acquired!\n")
+                        cprint("Victory!", tColor['victory'])
+                        cprint(f"{tempMonster['Coins']} coins have been acquired!\n", tColor['addItem'])
                         return "victory"
                     
                     break
@@ -150,7 +150,7 @@ def battle(monster):
                             
                 case "use potion":
                     if inventoryIndex("Potion") == None:
-                        print("You don't have any potions!\n")
+                        cprint("You don't have any potions!\n", tColor['fail'])
                             
                     else:
                         print("You use a potion\n")
@@ -169,8 +169,8 @@ def battle(monster):
                     displayStats()
                     
                 case "run":
-                    if dice(100) > player["Dexteriry"]:
-                        print("You successfully run away")
+                    if dice(100) > player["Dexterity"]:
+                        cprint("You successfully run away", 'yellow')
                         break
                     
                 case "help":
