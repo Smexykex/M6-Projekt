@@ -181,7 +181,7 @@ def playerTurn(monster):
                     cprint("You successfully run away\n", 'yellow')
                     return "ran away"
                 
-                cprint("You falied to run away!\n", tColor['fail'])
+                cprint("You failed to run away!\n", tColor['fail'])
                 return
                 
             case "inventory":
