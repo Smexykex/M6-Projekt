@@ -177,11 +177,12 @@ def playerTurn(monster):
                 return
             
             case "run":
-                if dice(100) > player["Dexteriry"]:
-                    cprint("You successfully run away", 'yellow')
+                if dice(100) < player["Dexterity"]:
+                    cprint("You successfully run away\n", 'yellow')
                     return "ran away"
                 
-                cprint("You falied to run away!", tColor['fail'])
+                cprint("You falied to run away!\n", tColor['fail'])
+                return
                 
             case "inventory":
                 displayInventory()
@@ -282,7 +283,7 @@ def newHighlands():
     if chanceForEncounter > 30:
         # Start encounter with wyvern
         result = battle(monsterList[1])
-        if result in ["defeat", "ran away"]:
+        if result == "defeat":
             return result
 
     if chanceForHerb > 50:
@@ -297,7 +298,7 @@ def newMines():
         # Start encounter with golem or troll
         whichMonster = random.choice([2, 4])
         result = battle(monsterList[whichMonster])
-        if result in ["defeat", "ran away"]:
+        if result == "defeat":
             return result
         
     #maybe needs changing, to be able to do if != any of event rolls, 
@@ -359,17 +360,17 @@ def adventure():
                 # Stops the adventure if the player loses
                 randomMonster = monsterList[random.randint(1, 3)]
                 result = battle(randomMonster.copy())
-                if result in ["defeat", "ran away"]:
+                if result == "defeat":
                     return
             
             case "highlands":
                 result = newHighlands()
-                if result in ["defeat", "ran away"]:
+                if result == "defeat":
                     return
             
             case "mines":
                 result = newMines()
-                if result in ["defeat", "ran away"]:
+                if result == "defeat":
                     return
             
             case "status":
