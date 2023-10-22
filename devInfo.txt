@@ -1,0 +1,57 @@
+READ THIS TO GET LIBRARIES WORKING:
+Using Thonny:
+    open Tools -> Manage packages
+    then search and install: 
+        termcolor
+        colorama
+
+for Linux (hopfully similar with Windows), USING A DIFFERENT CODE EDITOR, NOT THONNY:
+    go to project directory in terminal in code editor, and type:
+        pip install -r requirements.txt
+    if not using a virtual environment and on Windows, do this:
+        py -m pip install -r requirements.txt
+    You may need to install pip first.
+
+To check colored text is working, uncomment the color test after import lines below.
+If attribute 'bold' breaks program in Windows, just remove it from battle()
+
+To note: extra print()s exists here and there, as I couln't figure out how to fit \n 
+with color code in line above, without coloring both lines
+Remember this when adding cprints with background colors and using \n.
+Library still adds color to the line in empty lines
+
+If you want to add more, check
+https://pypi.org/project/termcolor/
+
+/////////////////////////////////////////////////////////////////////
+MISC:
+
+Work with imported files/dictionarys/functions:
+https://csatlas.com/python-import-file-module/
+
+Color library info:
+    Colored text will only work with cprint(), 
+    and you cannot do input(cprint("test", "red")) since cprint() always returns none.
+
+COLOR TEST (paste in main file after imported libraries)
+    cprint("test1234", "red")
+    cprint("testbold", "green", attrs=["bold"])
+
+Lore and Info color test (paste in main file after imported libraries/files)
+cprint("""\x1B[3m This is a lore text test, test 1234152315 alsdjf.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+Ut enim ad minim veniam, quis nostrud exercitation ulla \x1B[0m""", 
+tColor['lore'], attrs=["underline", "dark"])
+
+cprint("\x1B[3m This is an info text test, test 1234152315 alsdjf. \x1B[0m", tColor['info'])
+
+
+Lore text structure:
+cprint("\x1B[3m This is some lore. \x1B[0m", tColor['lore'], attrs=["underline", "dark"])
+Actual text:
+    lore1 = """
+    This is some lore.
+    """
+Need to make function which adds correct start and endings as seen in lines above,
+same for item info text.

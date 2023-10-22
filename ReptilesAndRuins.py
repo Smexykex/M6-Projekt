@@ -1,29 +1,3 @@
-"""
-READ THIS TO GET LIBRARIES WORKING:
-Using Thonny:
-    open Tools -> Manage packages
-    then search and install: 
-        termcolor
-        colorama
-
-for Linux (hopfully similar with Windows), USING A DIFFERENT CODE EDITOR, NOT THONNY:
-    go to project directory in terminal in code editor, and type:
-        pip install -r requirements.txt
-    if not using a virtual environment and on Windows, do this:
-        py -m pip install -r requirements.txt
-    You may need to install pip first.
-
-To check colored text is working, uncomment the color test after import lines below.
-If attribute 'bold' breaks program in Windows, just remove it from battle()
-
-To note: extra print()s exists here and there, as I couln't figure out how to fit \n 
-with color code in line above, without coloring both lines
-Remember this when adding cprints with background colors and using \n.
-Library still adds color to the line in empty lines
-
-If you want to add more, check
-https://pypi.org/project/termcolor/
-"""
 import random
 # Add manual delay with sleep(), argument is ~seconds to wait
 from time import sleep
@@ -33,13 +7,6 @@ from termcolor import colored, cprint
 # termcolor is the actual code
 import colorama
 colorama.init()
-
-# Colored text will only work with cprint(), 
-# and you cannot do input(cprint("test", "red")) since cprint() always returns none.
-
-# COLOR TEST
-# cprint("test1234", "red")
-# cprint("testbold", "green", attrs=["bold"])
 
 # PUT THIS IN EXTERNAL FILE AND IMPORT
 tColor = {
@@ -53,13 +20,7 @@ tColor = {
     'info': 'light_cyan',
     'lore': 'light_magenta'
 }
-cprint("""\x1B[3m This is a lore text test, test 1234152315 alsdjf.
-Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
-sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
-Ut enim ad minim veniam, quis nostrud exercitation ulla \x1B[0m""", 
-tColor['lore'], attrs=["underline", "dark"])
 
-cprint("\x1B[3m This is an info text test, test 1234152315 alsdjf. \x1B[0m", tColor['info'])
 
 def dice(upperNumber):
     return random.randint(1, upperNumber)
