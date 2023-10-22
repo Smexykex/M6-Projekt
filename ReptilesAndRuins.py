@@ -49,9 +49,17 @@ tColor = {
     'victory': 'light_green',
     'fail': 'red',
     'addItem': 'yellow',
-    'misc': 'light_blue'
-
+    'misc': 'light_blue',
+    'info': 'light_cyan',
+    'lore': 'light_magenta'
 }
+cprint("""\x1B[3m This is a lore text test, test 1234152315 alsdjf.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, 
+sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+Ut enim ad minim veniam, quis nostrud exercitation ulla \x1B[0m""", 
+tColor['lore'], attrs=["underline", "dark"])
+
+cprint("\x1B[3m This is an info text test, test 1234152315 alsdjf. \x1B[0m", tColor['info'])
 
 def dice(upperNumber):
     return random.randint(1, upperNumber)
