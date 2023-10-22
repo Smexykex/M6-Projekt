@@ -137,7 +137,7 @@ def battle(monster):
             action = playerAction(validInputs, "misc")
             match action:
                 case "attack":
-                    attack(player, monster)
+                    attack(player, tempMonster)
                     sleep(0.3)
                     if tempMonster["Health"] <= 0:
                         player["Coins"] += tempMonster["Coins"]
@@ -177,7 +177,7 @@ def battle(monster):
                     displayOptions(validInputs)
         
         # Monster attacks
-        attack(monster, player)
+        attack(tempMonster, player)
         sleep(0.3)
         if player["Health"] <= 0:
             cprint("Defeat! After managing to flee from combat, you return home\n", tColor['fail'])
@@ -353,7 +353,7 @@ def buyWares(wares):
     validInputs += ["exit", "help"]
     
     cprint(f"You have {player['Coins']} coins.", tColor['listSomething'])
-    cprint("<Items in stock> ", tColor['misc'])
+    cprint("<Items in stock> ", tColor['listSomething'])
     for item in wares.values():
         print('{:<15}'.format(item["Name"]), end=':')
         print('{:>10}'.format(item["Cost"]), end='')
@@ -384,8 +384,8 @@ def sellWares():
         validInputs.append(item["Name"])
     validInputs += ["exit", "help"]
     
-    print(f"You have {player['Coins']} coins.")
-    print("<Items in inventory> ")
+    cprint(f"You have {player['Coins']} coins.", tColor['listSomething'])
+    cprint("<Items in inventory> ", tColor['listSomething'])
     for item in player["Inventory"]:
         print('{:<15}'.format(item["Name"]), end=':')
         print('{:>10}'.format(item["Sell Price"]), end='')
