@@ -110,6 +110,37 @@ def displayOptions(validInputs):
     print("\n")
 
 
+def equipItem():
+    validInputs = []
+    equipment_list = []
+    for count, item in enumerate(player["Inventory"]):
+        if item["Equipable"]:
+            equipment_list.append(item)
+            validInputs.append(item["Name"])
+    validInputs += ["exit", "help"] 
+                
+    if len(equipment_list) == 0:
+        print("You don't have anything to equip!")
+        return
+                
+    while True:
+        action = playerAction(validInputs, "misc")
+        if action == "exit":
+            return
+        
+        elif action == "help":
+            displayOptions(validInputs)
+        
+        else:
+            for count, item in enumerate(player["Inventory"]):
+                if action == item["Name"]:
+                    player["Attack"] += item["Attack Modifier"]
+                    player["Defence"] += item["Defence Modifier"]
+                    player["Inventory"].pop(count)
+                    return
+            
+    
+    
 def attack(attacker, reciver):
     # Every point of dex increaces your dodge chance by 1%, starting at 0%
     hit = random.randint(1, 100) > reciver["Dexterity"]
@@ -123,9 +154,49 @@ def attack(attacker, reciver):
         print(f'{attacker["type"]} missed {reciver["type"]}!\n')
         
 
-# Returns "victory" if the playter won and "defeat" if they lost
-def battle(monster):
+def playerTurn(monster):
     validInputs = ["attack", "use potion", "inventory", "status", "run", "help"]
+    while True:
+        action = playerAction(validInputs, "misc")
+        match action:
+            case "attack":
+                attack(player, monster)
+                return
+
+            case "use potion":
+                if inventoryIndex("Potion") == None:
+                    cprint("You don't have any potions!\n", tColor['fail'])
+                    return
+            
+                print("You use a potion\n")
+                player["Health"] += 50
+                if player["Health"] > player["Max Health"]:
+                    player["Health"] = player["Max Health"]
+                                    
+                player["Inventory"].pop(inventoryIndex("Potion"))
+                return
+            
+            case "run":
+                if dice(100) < player["Dexterity"]:
+                    cprint("You successfully run away\n", 'yellow')
+                    return "ran away"
+                
+                cprint("You failed to run away!\n", tColor['fail'])
+                return
+                
+            case "inventory":
+                displayInventory()
+                    
+            case "status":
+                displayStats()
+                    
+                    
+            case "help":
+                displayOptions(validInputs)
+    
+    
+# Returns "defeat" if the player lost the battle and "ran away" if they ran form the battle
+def battle(monster):
     tempMonster = dict(monster)
     cprint(f"You encounter a {tempMonster['type']}!",tColor['newEnemy'], 'on_black', attrs=['bold'])
     print() #needs this instead of backslash n to cut background color off
@@ -133,48 +204,18 @@ def battle(monster):
     
     while True:
         # Player's turn
-        while True:
-            action = playerAction(validInputs, "misc")
-            match action:
-                case "attack":
-                    attack(player, tempMonster)
-                    sleep(0.3)
-                    if tempMonster["Health"] <= 0:
-                        player["Coins"] += tempMonster["Coins"]
-                        cprint("Victory!", tColor['victory'])
-                        cprint(f"{tempMonster['Coins']} coins have been acquired!\n", tColor['addItem'])
-                        return "victory"
-                    
-                    break
-                
-                            
-                case "use potion":
-                    if inventoryIndex("Potion") == None:
-                        cprint("You don't have any potions!\n", tColor['fail'])
-                            
-                    else:
-                        print("You use a potion\n")
-                        player["Health"] += 30
-                        if player["Health"] > player["Max Health"]:
-                            player["Health"] = player["Max Health"]
-                                    
-                        player["Inventory"].pop(inventoryIndex("Potion"))
-                        break
-                    
-                
-                case "inventory":
-                    displayInventory()
-                    
-                case "status":
-                    displayStats()
-                    
-                case "run":
-                    if dice(100) > player["Dexterity"]:
-                        cprint("You successfully run away", 'yellow')
-                        break
-                    
-                case "help":
-                    displayOptions(validInputs)
+        turn = playerTurn(tempMonster)
+        sleep(0.3)
+        
+        if tempMonster["Health"] <= 0:
+            player["Coins"] += tempMonster["Coins"]
+            cprint("Victory!", tColor['victory'])
+            cprint(f"{tempMonster['Coins']} coins have been acquired!\n", tColor['addItem'])
+            return
+        
+        elif turn == "ran away":
+            return "ran away"
+
         
         # Monster attacks
         attack(tempMonster, player)
@@ -455,7 +496,7 @@ def game():
         "Dexterity":30
         }
     
-    validInputs = ["adventure", "shop", "status", "inventory", "exit", "help"]
+    validInputs = ["adventure", "shop", "status", "inventory", "equip", "exit", "help"]
     while True:
         action = playerAction(validInputs, "misc")
         match action:
@@ -467,9 +508,9 @@ def game():
             case "shop":
                 wares = {
                     "Potion":{"Name":"Potion", "Cost":30, "Sell Price":20}, 
-                    "Iron Sword":{"Name":"Iron Sword", "Cost":150, "Sell Price":75}, 
-                    "Iron Shield":{"Name":"Iron Shield", "Cost":200, "Sell Price":100}, 
-                    "Iron Armour":{"Name":"Iron Armour", "Cost":300, "Sell Price":150}
+                    "Iron Sword":{"Name":"Iron Sword", "Equipable":True, "Attack Modifier":15, "Defence Modifier":0, "Cost":150, "Sell Price":75}, 
+                    "Iron Shield":{"Name":"Iron Shield", "Equipable":True, "Attack Modifier":0, "Defence Modifier":5, "Cost":200, "Sell Price":100}, 
+                    "Iron Armour":{"Name":"Iron Armour", "Equipable":True, "Attack Modifier":0, "Defence Modifier":10, "Cost":300, "Sell Price":150}
                     }
                 enterShop(wares)
                 
@@ -479,6 +520,9 @@ def game():
             
             case "inventory":
                 displayInventory()
+            
+            case "equip":
+                equipItem()
                 
             case "exit":
                 cprint("Exited game", 'green')
