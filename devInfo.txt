@@ -1,3 +1,9 @@
+Add this to your .gitignore file if you have one:
+    venv
+    .gitignore
+    __pycache__
+
+
 READ THIS TO GET LIBRARIES WORKING:
 Using Thonny:
     open Tools -> Manage packages
@@ -28,6 +34,10 @@ MISC:
 
 Work with imported files/dictionarys/functions:
 https://csatlas.com/python-import-file-module/
+
+Why __pycache__ exists:
+https://docs.kanaries.net/topics/Python/pycache
+
 
 Color library info:
     Colored text will only work with cprint(), 
