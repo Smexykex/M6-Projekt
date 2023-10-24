@@ -60,7 +60,7 @@ def displayInventory():
     
     for count, item in enumerate(player["Inventory"]):
         print('{:^5}'.format(count+1), end=':')
-        print('{:^15}'.format(item["Name"]), end='')
+        print('{:^20}'.format(item["Name"]), end='')
         print()
     print()
 
@@ -87,7 +87,7 @@ def equipItem():
     validInputs += ["exit", "help"] 
                 
     if len(equipment_list) == 0:
-        print("You don't have anything to equip!")
+        cprint("You don't have anything to equip!\n", tColor['fail'])
         return
                 
     while True:
@@ -109,8 +109,8 @@ def equipItem():
     
     
 def attack(attacker, reciver):
-    # Every point of dex increaces your dodge chance by 1%, starting at 0%
-    hit = random.randint(1, 100) > reciver["Dexterity"]
+    # Every point of dexterity increaces your dodge chance by 1%, starting at 0%
+    hit = dice(100) > reciver["Dexterity"]
     if hit:
         # Every point in defence reduces damage taken by 1
         damage = attacker["Attack"] - reciver["Defence"]
@@ -202,7 +202,7 @@ def foundHerb():
             case "harvest":
                 chanceForHarvest = dice(100)
                 if chanceForHarvest > 20:
-                    player["Inventory"].append("Rare Herb")
+                    player["Inventory"].append({"Name":"Rare Herb", "Sell Price":50})
                     cprint("Harvest successful!", tColor['victory'])
                     cprint( "Rare Herb added to inventory\n", tColor['addItem'])
                 else:
@@ -227,11 +227,11 @@ def foundGeode(number):
         action = playerAction(validInputs, "misc")
         match action:
             case "take":
-                player["Inventory"].append("Uncracked Geode")
+                player["Inventory"].append({"Name":"Uncracked Geode", "Sell Price":50})
                 cprint("You pick up an uncracked geode\n", tColor['addItem'])
                 break
             case "return":
-                cprint("You return back to the crossroads\n", tColor['misc'])
+                #cprint("You return back to the crossroads\n", tColor['misc'])
                 return 
             case "help":
                 displayOptions(validInputs)
