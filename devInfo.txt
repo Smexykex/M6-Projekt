@@ -38,6 +38,9 @@ https://csatlas.com/python-import-file-module/
 Why __pycache__ exists:
 https://docs.kanaries.net/topics/Python/pycache
 
+If __name__ == __main__:
+https://www.freecodecamp.org/news/if-name-main-python-example/
+
 
 Color library info:
     Colored text will only work with cprint(), 
