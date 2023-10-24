@@ -411,14 +411,13 @@ def enterShop(wares):
     
 
 def game():
-    cprint("\nWelcome to Replies and Ruins!\n", 'light_green')
-    print("type 'help' for a list of avalible commands!\n")
-    
-    # Players stats
+    # Initiate Player stats
     global player
     player = defaultStats.default_human
+    cprint("---Game initialised---\n", 'light_green', attrs=["bold"])
     
-    validInputs = ["adventure", "shop", "status", "inventory", "equip", "exit", "help"]
+    validInputs = ["adventure", "shop", "status", "inventory",
+     "equip", "main menu", "exit", "help"]
     while True:
         action = playerAction(validInputs, "misc")
         match action:
@@ -431,7 +430,6 @@ def game():
                 wares = defaultStats.home_shop
                 enterShop(wares)
                 
-            # Shows status of player
             case "status":
                 displayStats()
             
@@ -440,13 +438,74 @@ def game():
             
             case "equip":
                 equipItem()
-                
+            
+            case "main menu":
+                cprint("Exited to main menu", 'green')
+                return False
+            
+            case "exit":
+                cprint("Exited game", 'green')
+                return True
+            
+            case "help":
+                displayOptions(validInputs)
+
+
+def changeTheme():
+    global tColor
+    validInputs = ["default", "alternate", "back", "help"]
+    cprint("Available themes: ", tColor['misc'])
+    displayOptions(validInputs)
+    while True:
+        menuChoice = playerAction(validInputs, tColor['misc'])
+        match menuChoice:
+            case "default":
+                tColor = defaultStats.default_color_theme
+                cprint("Color theme set to default", tColor['misc'])
+                sleep(1)
+                cprint("Returned to main menu", tColor['misc'])
+                return
+
+            case "alternate":
+                tColor = defaultStats.alt1_color_theme
+                cprint("Color theme set to alternate", tColor['misc'])
+                sleep(1)
+                cprint("Returned to main menu", tColor['misc'])
+                return
+            
+            case "back":
+                cprint("Returned to main menu", tColor['misc'])
+                return
+
+            case "help":
+                displayOptions(validInputs)
+
+ 
+def main():
+    cprint("\nWelcome to Replies and Ruins!\n", 'light_green')
+    print("You are in the main menu")
+    print("type 'help' for a list of avalible commands!\n")
+    validInputs = ["start", "change theme", "exit", "help"]
+    fullExit = False
+    while True:
+        menuChoice = playerAction(validInputs, 'misc')
+        match menuChoice:
+            case "start":
+                fullExit = game()
+            
+            case "change theme":
+                changeTheme()
+            
             case "exit":
                 cprint("Exited game", 'green')
                 return
             
             case "help":
                 displayOptions(validInputs)
+            
+        if fullExit is True:
+            break
 
 
-game()
+if __name__ == "__main__":
+    main()
