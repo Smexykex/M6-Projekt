@@ -84,8 +84,12 @@ def equipItem():
         if item["Equipable"]:
             equipment_list.append(item)
             validInputs.append(item["Name"])
-    validInputs += ["exit", "help"] 
-                
+    validInputs += ["exit", "help"]
+    
+    for equipment in equipment_list:
+        print('{:^20}'.format(equipment["Name"]), end=" ")
+    print("\n")
+    
     if len(equipment_list) == 0:
         cprint("You don't have anything to equip!\n", tColor['fail'])
         return
@@ -114,18 +118,29 @@ def attack(attacker, reciver):
     if hit:
         # Attackers damage is between attack/2 and attack (attack/2 is rounded down)
         damage = random.randint(round(attacker["Attack"] / 2), attacker["Attack"])
-        # Every point in defence reduces damage taken by 1
+        # Every point in defence reduces damage taken by 1 
         damageTaken = damage - reciver["Defence"]
+        if damageTaken < 0:
+            damageTaken = 0
         reciver["Health"] -= damageTaken
         print(f'{attacker["type"]} deals {damageTaken} damage to {reciver["type"]}!\n')
         
     else:
         print(f'{attacker["type"]} missed {reciver["type"]}!\n')
-        
-
+    
+    
+def hasMana(manaCost):
+    if player["Mana"] >= manaCost:
+        player["Mana"] -= manaCost
+        if player["Mana"] < 0:
+            player["Mana"] = 0
+        return True
+    
+    cprint("You don't have enough mana!\n", tColor['fail'])
+    
+    
 def playerTurn(monster):
     validInputs = ["attack", "fire ball", "frost blast", "regenerate", "use potion", "inventory", "status", "run", "help"]
-    healBuff = 0
     while True:
         if healBuff > 0:
             player["Health"] += 10
@@ -139,42 +154,26 @@ def playerTurn(monster):
                 return
             
             case "fire ball":
-                if player["Mana"] >= 45:
+                if hasMana(45):
                     damage = 15 + player["Wisdom"]
                     monster["Health"] -= damage
-                    print(f'Player casts fire ball on {monster} and deals {damage} damage')
-                    
-                    player["Mana"] -= 45
-                    if player["Mana"] < 0:
-                        player["Mana"] = 0
+                    print(f'Player casts fire ball on {monster["type"]} and deals {damage} damage\n')
                     return
-                    
-                else:
-                    cprint("You don't have enough mana!\n", tColor['fail'])
             
             case "frost blast":
-                if player["Mana"] >= 35:
+                if hasMana(35):
                     damage = 10 + round(player["Wisdom"]/2)
                     monster["Health"] -= damage
                     monster["Dexterity"] -= 5
-                    print(f'Player casts frost blast on {monster} and deals {damage} damage')
-                    print(f'{monster} now has {monster["Dexteriry"]} dexterity')
-                    
-                    player["Mana"] -= 45
-                    if player["Mana"] < 0:
-                        player["Mana"] = 0
+                    print(f'Player casts frost blast on {monster["type"]} and deals {damage} damage')
+                    print(f'{monster["type"]} now has {monster["Dexterity"]} dexterity\n')
                     return
-                    
-                else:
-                    cprint("You don't have enough mana!\n", tColor['fail'])
             
             case "regenerate":
-                if player["Mana"] >= 80:
+                if hasMana(80):
                     healBuff = 4
-                    print("Player casts regenerate")
-                
-                else:
-                    cprint("You don't have enough mana!\n", tColor['fail'])
+                    print("Player casts regenerate\n")
+                    return
 
             case "use potion":
                 if inventoryIndex("Potion") != None:
@@ -224,6 +223,7 @@ def battle(monster):
     print() #needs this instead of backslash n to cut background color off
     sleep(2)
     
+    healBuff = 0
     while True:
         # Player's turn
         turn = playerTurn(tempMonster)
@@ -386,15 +386,15 @@ def buyWares(wares):
         validInputs.append(item)
     validInputs += ["exit", "help"]
     
-    cprint(f"You have {player['Coins']} coins.", tColor['listSomething'])
-    cprint("<Items in stock> ", tColor['listSomething'])
-    for item in wares.values():
-        print('{:<15}'.format(item["Name"]), end=':')
-        print('{:>10}'.format(item["Cost"]), end='')
-        print()
-    print()
-    
     while True:
+        cprint(f"You have {player['Coins']} coins.", tColor['listSomething'])
+        cprint("<Items in stock> ", tColor['listSomething'])
+        for item in wares.values():
+            print('{:<15}'.format(item["Name"]), end=':')
+            print('{:>10}'.format(item["Cost"]), end='')
+            print()
+        print()
+        
         action = playerAction(validInputs, "buy")
         if action == "exit":
             return
@@ -418,15 +418,15 @@ def sellWares():
         validInputs.append(item["Name"])
     validInputs += ["exit", "help"]
     
-    cprint(f"You have {player['Coins']} coins.", tColor['listSomething'])
-    cprint("<Items in inventory> ", tColor['listSomething'])
-    for item in player["Inventory"]:
-        print('{:<15}'.format(item["Name"]), end=':')
-        print('{:>10}'.format(item["Sell Price"]), end='')
-        print()
-    print()
-    
     while True:
+        cprint(f"You have {player['Coins']} coins.", tColor['listSomething'])
+        cprint("<Items in inventory> ", tColor['listSomething'])
+        for item in player["Inventory"]:
+            print('{:<15}'.format(item["Name"]), end=':')
+            print('{:>10}'.format(item["Sell Price"]), end='')
+            print()
+        print()
+        
         action = playerAction(validInputs, "sell")
         if action == "exit":
             return
@@ -437,7 +437,7 @@ def sellWares():
         else:
             for count, item in enumerate(player["Inventory"]):
                 if action == item["Name"]:
-                    print(f'You sold {item["Name"]}\n')
+                    print(f'You sold {item["Name"]} for {item["Sell Price"]} coins\n')
                     player["Coins"] += item["Sell Price"]
                     player["Inventory"].pop(count)
                     break
