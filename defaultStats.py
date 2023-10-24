@@ -71,7 +71,8 @@ default_human = {
         "Attack":50,
         "Wisdom":20,
         "Defence":25,
-        "Dexterity":30
+        "Dexterity":30,
+        "Heal Buff":0
         }
 
 

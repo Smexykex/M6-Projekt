@@ -46,7 +46,7 @@ def playerAction(validInputs, doWhat):
 
 def displayStats():
     for stat, value in player.items():
-        if stat in ["type", "Inventory", "Coins"]:
+        if stat in ["type", "Inventory", "Coins", "Heal Buff"]:
             continue
         
         print('{:<10}'.format(stat), end=':')
@@ -142,10 +142,10 @@ def hasMana(manaCost):
 def playerTurn(monster):
     validInputs = ["attack", "fire ball", "frost blast", "regenerate", "use potion", "inventory", "status", "run", "help"]
     while True:
-        if healBuff > 0:
+        if player["Heal Buff"] > 0:
             player["Health"] += 10
-            print(f'Player is healed by regenerate')
-            healBuff -= 1
+            print("Player is healed by regenerate\n")
+            player["Heal Buff"] -= 1
             
         action = playerAction(validInputs, "misc")
         match action:
@@ -171,7 +171,7 @@ def playerTurn(monster):
             
             case "regenerate":
                 if hasMana(80):
-                    healBuff = 4
+                    player["Heal Buff"] = 4
                     print("Player casts regenerate\n")
                     return
 
@@ -223,7 +223,6 @@ def battle(monster):
     print() #needs this instead of backslash n to cut background color off
     sleep(2)
     
-    healBuff = 0
     while True:
         # Player's turn
         turn = playerTurn(tempMonster)
