@@ -66,7 +66,10 @@ default_human = {
         "Coins":200,
         "Max Health":150,
         "Health":150,
+        "Max Mana":100,
+        "Mana":100,
         "Attack":50,
+        "Wisdom":20,
         "Defence":25,
         "Dexterity":30
         }
