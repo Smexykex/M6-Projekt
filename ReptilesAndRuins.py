@@ -230,9 +230,11 @@ def foundGeode(number):
                 player["Inventory"].append({"Name":"Uncracked Geode", "Sell Price":50})
                 cprint("You pick up an uncracked geode\n", tColor['addItem'])
                 break
+
             case "return":
                 #cprint("You return back to the crossroads\n", tColor['misc'])
                 return 
+
             case "help":
                 displayOptions(validInputs)
 
