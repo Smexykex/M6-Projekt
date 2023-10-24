@@ -59,7 +59,7 @@ def displayInventory():
     print('Coins:' + '{:^10}'.format(player["Coins"]))
     
     for count, item in enumerate(player["Inventory"]):
-        print('{:^5}'.format(count+1), end=':')
+        print('{:^20}'.format(count+1), end=':')
         print('{:^20}'.format(item["Name"]), end='')
         print()
     print()
@@ -112,28 +112,83 @@ def attack(attacker, reciver):
     # Every point of dexterity increaces your dodge chance by 1%, starting at 0%
     hit = dice(100) > reciver["Dexterity"]
     if hit:
+        # Attackers damage is between attack/2 and attack (attack/2 is rounded down)
+        damage = random.randint(round(attacker["Attack"] / 2), attacker["Attack"])
         # Every point in defence reduces damage taken by 1
-        damage = attacker["Attack"] - reciver["Defence"]
-        reciver["Health"] -= damage
-        print(f'{attacker["type"]} deals {damage} damage to {reciver["type"]}!\n')
+        damageTaken = damage - reciver["Defence"]
+        reciver["Health"] -= damageTaken
+        print(f'{attacker["type"]} deals {damageTaken} damage to {reciver["type"]}!\n')
         
     else:
         print(f'{attacker["type"]} missed {reciver["type"]}!\n')
         
 
 def playerTurn(monster):
-    validInputs = ["attack", "use potion", "inventory", "status", "run", "help"]
+    validInputs = ["attack", "fire ball", "frost blast", "regenerate", "use potion", "inventory", "status", "run", "help"]
+    healBuff = 0
     while True:
+        if healBuff > 0:
+            player["Health"] += 10
+            print(f'Player is healed by regenerate')
+            healBuff -= 1
+            
         action = playerAction(validInputs, "misc")
         match action:
             case "attack":
                 attack(player, monster)
                 return
+            
+            case "fire ball":
+                if player["Mana"] >= 45:
+                    damage = 15 + player["Wisdom"]
+                    monster["Health"] -= damage
+                    print(f'Player casts fire ball on {monster} and deals {damage} damage')
+                    
+                    player["Mana"] -= 45
+                    if player["Mana"] < 0:
+                        player["Mana"] = 0
+                    return
+                    
+                else:
+                    cprint("You don't have enough mana!\n", tColor['fail'])
+            
+            case "frost blast":
+                if player["Mana"] >= 35:
+                    damage = 10 + round(player["Wisdom"]/2)
+                    monster["Health"] -= damage
+                    monster["Dexterity"] -= 5
+                    print(f'Player casts frost blast on {monster} and deals {damage} damage')
+                    print(f'{monster} now has {monster["Dexteriry"]} dexterity')
+                    
+                    player["Mana"] -= 45
+                    if player["Mana"] < 0:
+                        player["Mana"] = 0
+                    return
+                    
+                else:
+                    cprint("You don't have enough mana!\n", tColor['fail'])
+            
+            case "regenerate":
+                if player["Mana"] >= 80:
+                    healBuff = 4
+                    print("Player casts regenerate")
+                
+                else:
+                    cprint("You don't have enough mana!\n", tColor['fail'])
 
             case "use potion":
-                if inventoryIndex("Potion") == None:
-                    cprint("You don't have any potions!\n", tColor['fail'])
+                if inventoryIndex("Potion") != None:
+                    print("You use a potion\n")
+                    player["Health"] += 50
+                    if player["Health"] > player["Max Health"]:
+                        player["Health"] = player["Max Health"]
+                        
+                    player["Inventory"].pop(inventoryIndex("Potion"))
                     return
+                
+                else:
+                    cprint("You don't have any potions!\n", tColor['fail'])
+                    
             
                 print("You use a potion\n")
                 player["Health"] += 50
@@ -190,6 +245,13 @@ def battle(monster):
         if player["Health"] <= 0:
             cprint("Defeat! After managing to flee from combat, you return home\n", tColor['fail'])
             return "defeat"
+        
+        if player["Mana"] >= 90:
+            player["Mana"] = 100
+        
+        else:
+            manaRegen = 7 + round(player["Wisdom"] / 10)
+            player["Mana"] += manaRegen
 
 
 def foundHerb():
