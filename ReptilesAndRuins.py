@@ -46,7 +46,8 @@ def playerAction(validInputs, doWhat):
 
 def displayStats():
     for stat, value in player.items():
-        if stat in ["type", "Inventory", "Coins", "Heal Buff"]:
+        # We don't display some player data
+        if stat in ["type", "Inventory", "Equipment", "Coins", "Heal Buff"]:
             continue
         
         print('{:<10}'.format(stat), end=':')
@@ -56,15 +57,16 @@ def displayStats():
 
 
 def displayInventory():
-    print('Coins:' + '{:^10}'.format(player["Coins"]))
+    print('Coins:' + '{:^20}'.format(player["Coins"]))
     
     for count, item in enumerate(player["Inventory"]):
-        print('{:^20}'.format(count+1), end=':')
+        print('{:^5}'.format(count+1), end=':')
         print('{:^20}'.format(item["Name"]), end='')
         print()
     print()
 
 
+# Returns the index of a item in the inventory. Retruns None otherwise
 def inventoryIndex(checkItem):
     for count, item in enumerate(player["Inventory"]):
         if item["Name"] == checkItem:
@@ -77,22 +79,46 @@ def displayOptions(validInputs):
     print("\n")
 
 
-def equipItem():
+# Equips an equipment from the inventory. Puts equiped equipment in the inventory
+def equipItem(equipment):
+    for count, item in enumerate(player["Inventory"]):
+        if equipment == item["Name"]:
+            # If the player have no equipment in that slot
+            if player["Equipment"][item["Type"]] == None:
+                player["Equipment"][item["Type"]] = item
+                player["Attack"] += item["Attack Modifier"]
+                player["Defence"] += item["Defence Modifier"]
+                player["Inventory"].pop(count)
+                        
+            # If the player have equipment in that slot
+            else:
+                player["Inventory"].append(player["Equipment"][item["Type"]])
+                player["Attack"] -= player["Equipment"][item["Type"]]["Attack Modifier"]
+                player["Defence"] -= player["Equipment"][item["Type"]]["Defence Modifier"]
+                        
+                player["Equipment"][item["Type"]] = item
+                player["Attack"] += item["Attack Modifier"]
+                player["Defence"] += item["Defence Modifier"]
+                player["Inventory"].pop(count)
+            return
+    
+    
+def equip():
     validInputs = []
-    equipment_list = []
+    equipmentCount = 0
+    
     for count, item in enumerate(player["Inventory"]):
         if item["Equipable"]:
-            equipment_list.append(item)
+            print('{:<20}'.format(item["Name"]), end=" ")
+            equipmentCount += 1
             validInputs.append(item["Name"])
     validInputs += ["exit", "help"]
     
-    for equipment in equipment_list:
-        print('{:^20}'.format(equipment["Name"]), end=" ")
-    print("\n")
-    
-    if len(equipment_list) == 0:
+    if equipmentCount == 0:
         cprint("You don't have anything to equip!\n", tColor['fail'])
         return
+    
+    print("\n")
                 
     while True:
         action = playerAction(validInputs, "misc")
@@ -103,13 +129,8 @@ def equipItem():
             displayOptions(validInputs)
         
         else:
-            for count, item in enumerate(player["Inventory"]):
-                if action == item["Name"]:
-                    player["Attack"] += item["Attack Modifier"]
-                    player["Defence"] += item["Defence Modifier"]
-                    player["Inventory"].pop(count)
-                    return
-            
+            equipItem(action)
+            return
     
     
 def attack(attacker, reciver):
@@ -128,7 +149,9 @@ def attack(attacker, reciver):
     else:
         print(f'{attacker["type"]} missed {reciver["type"]}!\n')
     
-    
+
+# Checks if the player can cast a spell.
+# If they can, return True and subtract the mana cost from the players mana
 def hasMana(manaCost):
     if player["Mana"] >= manaCost:
         player["Mana"] -= manaCost
@@ -142,6 +165,7 @@ def hasMana(manaCost):
 def playerTurn(monster):
     validInputs = ["attack", "fire ball", "frost blast", "regenerate", "use potion", "inventory", "status", "run", "help"]
     while True:
+        # Heal the player if they have casted regenerate
         if player["Heal Buff"] > 0:
             player["Health"] += 10
             print("Player is healed by regenerate\n")
@@ -245,11 +269,12 @@ def battle(monster):
             cprint("Defeat! After managing to flee from combat, you return home\n", tColor['fail'])
             return "defeat"
         
+        # The player gains 5 mana every turn plus 1 extra per 5 wisdom
         if player["Mana"] >= 90:
             player["Mana"] = 100
         
         else:
-            manaRegen = 7 + round(player["Wisdom"] / 10)
+            manaRegen = 5 + player["Wisdom"] // 5
             player["Mana"] += manaRegen
 
 
@@ -500,7 +525,7 @@ def game():
                 displayInventory()
             
             case "equip":
-                equipItem()
+                equip()
             
             case "main menu":
                 cprint("Exited to main menu", 'green')

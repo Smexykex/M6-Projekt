@@ -33,9 +33,18 @@ thing = {
         "Usable":True, 
         "Cost":30, 
         "Sell Price":20},
+    
+    "Bronze Sword":{
+        "Name":"Bronze Sword",
+        "Type":"Sword",
+        "Equipable":True, 
+        "Attack Modifier":5, 
+        "Defence Modifier":0,
+        "Sell Price":30},
 
     "Iron Sword":{
-        "Name":"Iron Sword", 
+        "Name":"Iron Sword",
+        "Type":"Sword",
         "Equipable":True, 
         "Attack Modifier":15, 
         "Defence Modifier":0, 
@@ -43,7 +52,8 @@ thing = {
         "Sell Price":75}, 
 
     "Iron Shield":{
-        "Name":"Iron Shield", 
+        "Name":"Iron Shield",
+        "Type":"Shield",
         "Equipable":True, 
         "Attack Modifier":0, 
         "Defence Modifier":5, 
@@ -51,7 +61,8 @@ thing = {
         "Sell Price":100}, 
 
     "Iron Armour":{
-        "Name":"Iron Armour", 
+        "Name":"Iron Armour",
+        "Type":"Armour",
         "Equipable":True, 
         "Attack Modifier":0, 
         "Defence Modifier":10, 
