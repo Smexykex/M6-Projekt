@@ -83,31 +83,34 @@ def displayOptions(validInputs):
 def equipItem(equipment):
     for count, item in enumerate(player["Inventory"]):
         if equipment == item["Name"]:
-            # If the player have no equipment in that slot
-            if player["Equipment"][item["Type"]] == None:
-                player["Equipment"][item["Type"]] = item
+            equipmentType = item["Type"] # Type of equipment the player is equiping
+            # If the player have no equipment of that type equiped
+            if player["Equipment"][equipmentType] == None:
+                print(f'You equiped {equipment}\n')
+                player["Equipment"][equipmentType] = item
                 player["Attack"] += item["Attack Modifier"]
                 player["Defence"] += item["Defence Modifier"]
                 player["Inventory"].pop(count)
                         
-            # If the player have equipment in that slot
+            # If the player have that of equipment already equiped
             else:
-                player["Inventory"].append(player["Equipment"][item["Type"]])
-                player["Attack"] -= player["Equipment"][item["Type"]]["Attack Modifier"]
-                player["Defence"] -= player["Equipment"][item["Type"]]["Defence Modifier"]
+                print(f'You replaced {player["Equipment"][equipmentType]["Name"]} with {equipment}\n')
+                player["Inventory"].append(player["Equipment"][equipmentType])
+                player["Attack"] -= player["Equipment"][equipmentType]["Attack Modifier"]
+                player["Defence"] -= player["Equipment"][equipmentType]["Defence Modifier"]
                         
-                player["Equipment"][item["Type"]] = item
+                player["Equipment"][equipmentType] = item
                 player["Attack"] += item["Attack Modifier"]
                 player["Defence"] += item["Defence Modifier"]
                 player["Inventory"].pop(count)
             return
-    
+
     
 def equip():
     validInputs = []
     equipmentCount = 0
     
-    for count, item in enumerate(player["Inventory"]):
+    for item in player["Inventory"]:
         if item["Equipable"]:
             print('{:<20}'.format(item["Name"]), end=" ")
             equipmentCount += 1
@@ -131,7 +134,40 @@ def equip():
         else:
             equipItem(action)
             return
+
     
+def unequip():
+    validInputs = []
+    wornEquipmentCount = 0
+    
+    for type, item in player["Equipment"].items():
+        if item != None:
+            print('{:<20}'.format(type), end=" ")
+            wornEquipmentCount += 1
+            validInputs.append(type)
+    validInputs += ["exit", "help"]
+    
+    if wornEquipmentCount == 0:
+        cprint("You don't have anything to unequip!\n", tColor['fail'])
+        return
+    
+    print("\n")
+                
+    while True:
+        action = playerAction(validInputs, "misc")
+        if action == "exit":
+            return
+        
+        elif action == "help":
+            displayOptions(validInputs)
+        
+        else:
+            print(f'You unequiped {player["Equipment"][action]["Name"]}\n')
+            player["Inventory"].append(player["Equipment"][action])
+            player["Attack"] -= player["Equipment"][action]["Attack Modifier"]
+            player["Defence"] -= player["Equipment"][action]["Defence Modifier"]
+            player["Equipment"][action] = None
+            return
     
 def attack(attacker, reciver):
     # Every point of dexterity increaces your dodge chance by 1%, starting at 0%
@@ -505,7 +541,7 @@ def game():
     cprint("---Game initialised---\n", 'light_green', attrs=["bold"])
     
     validInputs = ["adventure", "shop", "status", "inventory",
-     "equip", "main menu", "exit", "help"]
+     "equip", "unequip", "main menu", "exit", "help"]
     while True:
         action = playerAction(validInputs, "misc")
         match action:
@@ -526,6 +562,9 @@ def game():
             
             case "equip":
                 equip()
+            
+            case "unequip":
+                unequip()
             
             case "main menu":
                 cprint("Exited to main menu", 'green')
