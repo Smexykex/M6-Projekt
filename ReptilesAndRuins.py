@@ -79,29 +79,33 @@ def displayOptions(validInputs):
     print("\n")
 
 
+def updateStats(equipmentType, sign = 1):
+    player["Attack"] += player["Equipment"][equipmentType]["Attack Modifier"] * sign
+    player["Wisdom"] += player["Equipment"][equipmentType]["Wisdom Modifier"] * sign
+    player["Defence"] += player["Equipment"][equipmentType]["Defence Modifier"] * sign
+    player["Dexterity"] += player["Equipment"][equipmentType]["Dexterity Modifier"] * sign
+    
+
 # Equips an equipment from the inventory. Puts equiped equipment in the inventory
 def equipItem(equipment):
     for count, item in enumerate(player["Inventory"]):
         if equipment == item["Name"]:
             equipmentType = item["Type"] # Type of equipment the player is equiping
-            # If the player have no equipment of that type equiped
+            # If the player haven't that type of equipment already equiped
             if player["Equipment"][equipmentType] == None:
                 print(f'You equiped {equipment}\n')
                 player["Equipment"][equipmentType] = item
-                player["Attack"] += item["Attack Modifier"]
-                player["Defence"] += item["Defence Modifier"]
+                updateStats(equipmentType)
                 player["Inventory"].pop(count)
                         
-            # If the player have that of equipment already equiped
+            # If the player have that type of equipment already equiped
             else:
                 print(f'You replaced {player["Equipment"][equipmentType]["Name"]} with {equipment}\n')
                 player["Inventory"].append(player["Equipment"][equipmentType])
-                player["Attack"] -= player["Equipment"][equipmentType]["Attack Modifier"]
-                player["Defence"] -= player["Equipment"][equipmentType]["Defence Modifier"]
+                updateStats(equipmentType, -1)
                         
                 player["Equipment"][equipmentType] = item
-                player["Attack"] += item["Attack Modifier"]
-                player["Defence"] += item["Defence Modifier"]
+                updateStats(equipmentType)
                 player["Inventory"].pop(count)
             return
 
@@ -164,8 +168,7 @@ def unequip():
         else:
             print(f'You unequiped {player["Equipment"][action]["Name"]}\n')
             player["Inventory"].append(player["Equipment"][action])
-            player["Attack"] -= player["Equipment"][action]["Attack Modifier"]
-            player["Defence"] -= player["Equipment"][action]["Defence Modifier"]
+            updateStats(action, -1)
             player["Equipment"][action] = None
             return
     
@@ -173,8 +176,8 @@ def attack(attacker, reciver):
     # Every point of dexterity increaces your dodge chance by 1%, starting at 0%
     hit = dice(100) > reciver["Dexterity"]
     if hit:
-        # Attackers damage is between attack/2 and attack (attack/2 is rounded down)
-        damage = random.randint(round(attacker["Attack"] / 2), attacker["Attack"])
+        # The attackers damage is between attack/2 and attack (attack/2 is rounded down)
+        damage = random.randint(attacker["Attack"] // 2, attacker["Attack"])
         # Every point in defence reduces damage taken by 1 
         damageTaken = damage - reciver["Defence"]
         if damageTaken < 0:
@@ -278,11 +281,11 @@ def playerTurn(monster):
 
 def gainXp(exp):
     player["Experience"] += exp
-    if player["Experience"] >= player["Experience to level"]:
+    if player["Experience"] >= player["Next level"]:
         print("Level up!\n")
-        player["Experience"] -= player["Experience to level"]
+        player["Experience"] -= player["Next level"]
         player["Level"] += 1
-        player["Experience to level"] = round(player["Experience to level"] * 1.1)
+        player["Next level"] = round(player["Next level"] * 1.1)
         player["Max Health"] += 10
         
         statPoints = 5
@@ -319,6 +322,12 @@ def battle(monster):
             
             player["Coins"] += tempMonster["Coins"]
             sleep(0.3)
+            chanceForDrop = dice(100)
+            if chanceForDrop <= 100:
+                print(f'{tempMonster["type"]} dropped {tempMonster["Drop"]["Name"]}\n')
+                player["Inventory"].append(tempMonster["Drop"])
+            
+            sleep(0.3)
             gainXp(tempMonster["Experience gain"])
             return
         
@@ -330,11 +339,12 @@ def battle(monster):
         attack(tempMonster, player)
         sleep(0.3)
         if player["Health"] <= 0:
-            cprint("Defeat! After managing to flee from combat, you return home\n", tColor['fail'])
-            
+            cprint("Defeat! You lost 50 coins!\n", tColor['fail'])
             player["Coins"] -= 50
             if player["Coins"] < 0:
                 player["Coins"] = 0
+                
+            print("After managing to flee from combat, you return home\n")
             return "defeat"
         
         # The player gains 5 mana every turn plus 1 extra per 5 wisdom
