@@ -77,13 +77,16 @@ default_human = {
         "Shield":None,
         "Armour":None},
     "Coins":200,
+    "Level":1,
+    "Experience":0,
+    "Next level":100,
     "Max Health":150,
     "Max Mana":100,
     "Health":150,
     "Mana":100,
-    "Attack":50,
+    "Attack":40,
     "Wisdom":20,
-    "Defence":25,
+    "Defence":10,
     "Dexterity":30,
     "Heal Buff":0
 }
@@ -93,26 +96,29 @@ default_monsterList = {
     1:{
         "type":"Wyvern",
         "Health":150,
-        "Attack":35,
+        "Attack":30,
         "Defence":15,
         "Dexterity":50,
-        "Coins":50
+        "Coins":50,
+        "Experience gain":35
         },
     2:{
         "type":"Golem",
-        "Health":300,
-        "Attack":35,
-        "Defence":40,
+        "Health":250,
+        "Attack":30,
+        "Defence":30,
         "Dexterity":0,
-        "Coins":75
+        "Coins":75,
+        "Experience gain":75
         },
     3:{
         "type":"Dragon",
         "Health":250,
         "Attack":40,
-        "Defence":30,
+        "Defence":20,
         "Dexterity":15,
-        "Coins":100
+        "Coins":100,
+        "Experience gain":80
         },
     4:{
         "type":"Troll",
@@ -120,6 +126,7 @@ default_monsterList = {
         "Attack":40,
         "Defence":25,
         "Dexterity":20,
-        "Coins":25
+        "Coins":25,
+        "Experience gain":25
         }
 }

@@ -50,8 +50,8 @@ def displayStats():
         if stat in ["type", "Inventory", "Equipment", "Coins", "Heal Buff"]:
             continue
         
-        print('{:<10}'.format(stat), end=':')
-        print('{:>10}'.format(value), end='')
+        print('{:<11}'.format(stat), end=':')
+        print('{:>6}'.format(value), end='')
         print()
     print()
 
@@ -221,8 +221,8 @@ def playerTurn(monster):
                     return
             
             case "frost blast":
-                if hasMana(35):
-                    damage = 10 + round(player["Wisdom"]/2)
+                if hasMana(30):
+                    damage = 10 + player["Wisdom"] // 2
                     monster["Health"] -= damage
                     monster["Dexterity"] -= 5
                     print(f'Player casts frost blast on {monster["type"]} and deals {damage} damage')
@@ -231,7 +231,7 @@ def playerTurn(monster):
             
             case "regenerate":
                 if hasMana(80):
-                    player["Heal Buff"] = 4
+                    player["Heal Buff"] = 3 + player["Wisdom"] // 15
                     print("Player casts regenerate\n")
                     return
 
@@ -274,8 +274,33 @@ def playerTurn(monster):
                     
             case "help":
                 displayOptions(validInputs)
-    
-    
+
+
+def gainXp(exp):
+    player["Experience"] += exp
+    if player["Experience"] >= player["Experience to level"]:
+        print("Level up!\n")
+        player["Experience"] -= player["Experience to level"]
+        player["Level"] += 1
+        player["Experience to level"] = round(player["Experience to level"] * 1.1)
+        player["Max Health"] += 10
+        
+        statPoints = 5
+        validInputs = ["Attack", "Wisdom", "Defence", "Dexterity"]
+        print("---Select which stats you would like to increase---\n")
+        while statPoints > 0:
+            for stat, value in player.items():
+                if stat in validInputs:
+                    print('{:<10}'.format(stat), end=':')
+                    print('{:>10}'.format(value), end='')
+                    print()
+            print()
+            
+            action = playerAction(validInputs, "misc")
+            player[action] += 1
+            statPoints -= 1
+
+
 # Returns "defeat" if the player lost the battle and "ran away" if they ran form the battle
 def battle(monster):
     tempMonster = dict(monster)
@@ -289,9 +314,12 @@ def battle(monster):
         sleep(0.3)
         
         if tempMonster["Health"] <= 0:
-            player["Coins"] += tempMonster["Coins"]
             cprint("Victory!", tColor['victory'])
             cprint(f"{tempMonster['Coins']} coins have been acquired!\n", tColor['addItem'])
+            
+            player["Coins"] += tempMonster["Coins"]
+            sleep(0.3)
+            gainXp(tempMonster["Experience gain"])
             return
         
         elif turn == "ran away":
@@ -303,6 +331,10 @@ def battle(monster):
         sleep(0.3)
         if player["Health"] <= 0:
             cprint("Defeat! After managing to flee from combat, you return home\n", tColor['fail'])
+            
+            player["Coins"] -= 50
+            if player["Coins"] < 0:
+                player["Coins"] = 0
             return "defeat"
         
         # The player gains 5 mana every turn plus 1 extra per 5 wisdom
@@ -549,6 +581,7 @@ def game():
             case "adventure":
                 adventure()
                 player["Health"] = player["Max Health"]
+                player["Mana"] = player["Max Mana"]
             
             case "shop":
                 wares = defaultStats.home_shop
