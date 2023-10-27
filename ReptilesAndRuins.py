@@ -313,20 +313,36 @@ def newMines():
     cprint("You return back to the crossroads\n", tColor['misc'])
 
 
+def useUncrackedGeode(player):
+    player["Inventory"].remove(itemStats.thing["uncracked geode"])
+    cprint("You hit the uncracked geode against a nearby boulder.", tColor["misc"])
+    sleep(0.5)
+    roll = dice(100)
+    if roll > 80:
+        player["Inventory"].append(itemStats.thing["amethyst geode"])
+        cprint("It opens up and reveals a shimmering purple interior", tColor['misc'])
+        cprint("You pick up an Amethyst Geode\n", tColor['addItem'])
+    else:
+        player["Inventory"].append(itemStats.thing["quartz geode"])
+        cprint("It opens up and reveals its interior glimmering with white quartz", tColor['misc'])
+        cprint("You pick up a Quartz Geode\n", tColor['addItem'])
+    return
+
+
 def adventure():
     cprint("Adventure awaits!", tColor['misc'])
     cprint("You find yourself at a crossroad\n", tColor['misc'])
     validInputs = ["wilds", "highlands", "mines", "status", "inventory",
     "equipment", "equip", "unequip", "home"]
-    if "Uncracked Geode" in player["Inventory"]:
-        validInputs.insert(0, "crack geode")
     while True:
+        if itemStats.thing["uncracked geode"] in player["Inventory"]:
+            validInputs.insert(0, "crack geode")
         displayOptions(validInputs)
         action = playerAction(validInputs, "where")
         match action:
             case "crack geode":
                 useUncrackedGeode(player)
-                if "Uncracked Geode" not in player["Inventory"]:
+                if itemStats.thing["uncracked geode"] not in player["Inventory"]:
                     validInputs.remove("crack geode")
 
             case "wilds":

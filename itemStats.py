@@ -2,7 +2,7 @@
 # info, interaction with specific item, stats for chosen item, etc.
 
 # Structure:
-# Use specific item function, eg function for cracking geode
+# Use specific item function
 # Dictionary of item statistics,
 
 # Checks if the player can cast a spell.
@@ -58,23 +58,7 @@ def usePotion(player):
         return True
 
 
-def useUncrackedGeode(player):
-    cprint("You hit the uncracked geode against a nearby bolder.", "misc")
-    player["Inventory"].pop(inventoryIndex(player, "uncracked geode"))
-    roll = dice(100)
-    if roll > 80:
-        cprint("It opens up and reveals a shimmering purple interior", 'misc')
-        player["Inventory"].append({thing["amethyst geode"]})
-        cprint("You pick up an Amethyst Geode\n", tColor['addItem'])
-    else:
-        cprint("It opens up and reveals its interior glimmering with white quartz", 'misc')
-        player["Inventory"].append({thing["quartz geode"]})
-        cprint("You pick up a Quartz Geode\n", tColor['addItem'])
-    return
-
-
 # Using item as dict name might screw with stuff in main file
-# Change how it works if you have a better idea
 thing = {
     "potion":{
         "Name":"Potion", 
@@ -172,7 +156,7 @@ thing = {
         "Name":"Uncracked Geode", 
         "Sell Price":5}, 
     
-    "quartz qeode":{
+    "quartz geode":{
         "Name":"Quartz Geode", 
         "Sell Price":25}, 
     

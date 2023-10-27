@@ -30,7 +30,7 @@ alt1_color_theme = {
     'fail': 'red',
     'addItem': 'light_blue',
     'misc': 'light_green',
-    'choices': 'light_grey',
+    'choices': 'light_blue',
     'lore': 'light_grey'
 }
 
