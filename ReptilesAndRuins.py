@@ -66,6 +66,15 @@ def displayInventory():
     print()
 
 
+def displayEquipment():
+    for equipmentType, equipment in player["Equipment"].items():
+        if equipment != None:
+            print('{:^7}'.format(equipmentType), end=':')
+            print('{:^20}'.format(equipment["Name"]), end='')
+            print()
+    print()
+
+
 # Returns the index of a item in the inventory. Retruns None otherwise
 def inventoryIndex(checkItem):
     for count, item in enumerate(player["Inventory"]):
@@ -97,16 +106,16 @@ def equipItem(equipment):
                 player["Equipment"][equipmentType] = item
                 updateStats(equipmentType)
                 player["Inventory"].pop(count)
-                        
+                return
+            
             # If the player have that type of equipment already equiped
-            else:
-                print(f'You replaced {player["Equipment"][equipmentType]["Name"]} with {equipment}\n')
-                player["Inventory"].append(player["Equipment"][equipmentType])
-                updateStats(equipmentType, -1)
+            print(f'You replaced {player["Equipment"][equipmentType]["Name"]} with {equipment}\n')
+            player["Inventory"].append(player["Equipment"][equipmentType])
+            updateStats(equipmentType, -1)
                         
-                player["Equipment"][equipmentType] = item
-                updateStats(equipmentType)
-                player["Inventory"].pop(count)
+            player["Equipment"][equipmentType] = item
+            updateStats(equipmentType)
+            player["Inventory"].pop(count)
             return
 
     
@@ -130,15 +139,16 @@ def equip():
     while True:
         displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
-        if action == "exit":
-            return
-        
-        elif action == "help":
-            displayOptions(validInputs)
-        
-        else:
-            equipItem(action)
-            return
+        match action:
+            case "exit":
+                return
+            
+            case "help":
+                displayOptions(validInputs)
+            
+            case _:
+                equipItem(action)
+                return
 
     
 def unequip():
@@ -349,12 +359,10 @@ def battle(monster):
             return "defeat"
         
         # The player gains 5 mana every turn plus 1 extra per 5 wisdom
-        if player["Mana"] >= 90:
-            player["Mana"] = 100
-        
-        else:
-            manaRegen = 5 + player["Wisdom"] // 5
-            player["Mana"] += manaRegen
+        manaRegen = 5 + player["Wisdom"] // 5
+        player["Mana"] += manaRegen
+        if player["Mana"] > player["Max Mana"]:
+            player["Mana"] = player["Max Mana"]
 
 
 def foundHerb():
