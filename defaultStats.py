@@ -1,7 +1,7 @@
 # Main file will import this file for getting stats for a new save, 
 # fighting monsters, choosing color theme.
 
-# Dictionary med all data för items
+# Dictionary med all data for items
 from itemStats import thing
 
 # Structure:
@@ -47,15 +47,7 @@ default_human = {
     "type":"Player",
     "Inventory":[],
     "Equipment":{
-        "Sword":{
-            "Name":"Bronze Sword",
-            "Type":"Sword",
-            "Equipable":True,
-            "Attack Modifier":20,
-            "Wisdom Modifier":0,
-            "Defence Modifier":0,
-            "Dexterity Modifier":0,
-            "Sell Price":30},
+        "Sword":thing["bronze sword"],
         "Shield":None,
         "Armour":None},
     "Coins":200,
@@ -83,15 +75,7 @@ default_monsterList = {
         "Dexterity":50,
         "Coins":50,
         "Experience gain":35,
-        "Drop":{
-            "Name":"Wyvernscale Armour",
-            "Type":"Armour",
-            "Equipable":True, 
-            "Attack Modifier":0,
-            "Wisdom Modifier":0,
-            "Defence Modifier":10,
-            "Dexterity Modifier":5,
-            "Sell Price":250},
+        "Drop":thing["wyvernscale armour"]
         },
     2:{
         "type":"Golem",
@@ -101,15 +85,7 @@ default_monsterList = {
         "Dexterity":0,
         "Coins":75,
         "Experience gain":75,
-        "Drop":{
-            "Name":"Golem Core",
-            "Type":"Shield",
-            "Equipable":True, 
-            "Attack Modifier":0,
-            "Wisdom Modifier":5,
-            "Defence Modifier":7,
-            "Dexterity Modifier":0,
-            "Sell Price":300},
+        "Drop":thing["golem core"]
         },
     3:{
         "type":"Dragon",
@@ -119,15 +95,7 @@ default_monsterList = {
         "Dexterity":15,
         "Coins":100,
         "Experience gain":80,
-        "Drop":{
-            "Name":"Dragon Tooth",
-            "Type":"Sword",
-            "Equipable":True, 
-            "Attack Modifier":35,
-            "Wisdom Modifier":5,
-            "Defence Modifier":0,
-            "Dexterity Modifier":0,
-            "Sell Price":300},
+        "Drop":thing["dragon tooth"]
         },
     4:{
         "type":"Troll",
@@ -137,14 +105,6 @@ default_monsterList = {
         "Dexterity":20,
         "Coins":25,
         "Experience gain":25,
-        "Drop":{
-            "Name":"Troll Club",
-            "Type":"Sword",
-            "Equipable":True, 
-            "Attack Modifier":35,
-            "Wisdom Modifier":0,
-            "Defence Modifier":0,
-            "Dexterity Modifier":-5,
-            "Sell Price":200},
+        "Drop":thing["troll club"]
         }
 }

@@ -3,24 +3,72 @@
 
 # Structure:
 # Use specific item function, eg function for cracking geode
-# Dictionary of item statistics, 
+# Dictionary of item statistics,
 
-def usePotion():
-    #abstract from main file?
-    return
+# Checks if the player can cast a spell.
+# If they can, return True and subtract the mana cost from the players mana
+def hasMana(player, manaCost):
+    if player["Mana"] >= manaCost:
+        player["Mana"] -= manaCost
+        if player["Mana"] < 0:
+            player["Mana"] = 0
+        return True
+    
+
+def castFireBall(player, monster):
+    if hasMana(player, 45):
+        damage = 15 + player["Wisdom"]
+        monster["Health"] -= damage
+        print(f'Player casts fire ball on {monster["type"]} and deals {damage} damage\n')
+        return True
 
 
-def useUncrackedGeode():
+def castFrostBlast(player, monster):
+    if hasMana(player, 30):
+        damage = 10 + player["Wisdom"] // 2
+        monster["Health"] -= damage
+        monster["Dexterity"] -= 5
+        print(f'Player casts frost blast on {monster["type"]} and deals {damage} damage')
+        print(f'{monster["type"]} now has {monster["Dexterity"]} dexterity\n')
+        return True
+
+
+def castRegenerate(player):
+    if hasMana(player, 80):
+        player["Heal Buff"] = 3 + player["Wisdom"] // 15
+        print("Player casts regenerate\n")
+        return True
+
+
+# Returns the index of a item in the inventory. Retruns None otherwise
+def inventoryIndex(player, checkItem):
+    for count, item in enumerate(player["Inventory"]):
+        if item["Name"] == checkItem:
+            return count
+
+
+def usePotion(player):
+    index = inventoryIndex(player, "Potion")
+    if index != None:
+        print("You use a potion\n")
+        player["Inventory"].pop(index)
+        player["Health"] += 50
+        if player["Health"] > player["Max Health"]:
+            player["Health"] = player["Max Health"]
+        return True
+
+
+def useUncrackedGeode(player):
     cprint("You hit the uncracked geode against a nearby bolder.", "misc")
-    player["Inventory"].pop(inventoryIndex("Uncracked Geode"))
+    player["Inventory"].pop(inventoryIndex(player, "uncracked geode"))
     roll = dice(100)
     if roll > 80:
         cprint("It opens up and reveals a shimmering purple interior", 'misc')
-        player["Inventory"].append({thing["Amethyst Geode"]})
+        player["Inventory"].append({thing["amethyst geode"]})
         cprint("You pick up an Amethyst Geode\n", tColor['addItem'])
     else:
         cprint("It opens up and reveals its interior glimmering with white quartz", 'misc')
-        player["Inventory"].append({thing["Quartz Geode"]})
+        player["Inventory"].append({thing["quartz geode"]})
         cprint("You pick up a Quartz Geode\n", tColor['addItem'])
     return
 
