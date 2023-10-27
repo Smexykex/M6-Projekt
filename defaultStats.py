@@ -1,6 +1,9 @@
 # Main file will import this file for getting stats for a new save, 
 # fighting monsters, choosing color theme.
 
+# Dictionary med all data för items
+from itemStats import thing
+
 # Structure:
 # Themes
 # Shop items
@@ -15,7 +18,7 @@ default_color_theme = {
     'fail': 'red',
     'addItem': 'yellow',
     'misc': 'light_blue',
-    'info': 'light_cyan',
+    'choices': 'light_magenta',
     'lore': 'light_magenta'
 }
 
@@ -27,46 +30,17 @@ alt1_color_theme = {
     'fail': 'red',
     'addItem': 'light_blue',
     'misc': 'light_green',
-    'info': 'white',
+    'choices': 'light_grey',
     'lore': 'light_grey'
 }
 
 
 home_shop = {
-    "potion":{
-        "Name":"Potion", 
-        "Cost":30, "Sell Price":20}, 
-    "iron sword":{
-        "Name":"Iron Sword",
-        "Type":"Sword",
-        "Equipable":True, 
-        "Attack Modifier":30,
-        "Wisdom Modifier":0,
-        "Defence Modifier":0,
-        "Dexterity Modifier":0,
-        "Cost":150, 
-        "Sell Price":75}, 
-    "iron shield":{
-        "Name":"Iron Shield",
-        "Type":"Shield",
-        "Equipable":True, 
-        "Attack Modifier":0,
-        "Wisdom Modifier":0,
-        "Defence Modifier":5,
-        "Dexterity Modifier":0,
-        "Cost":200, 
-        "Sell Price":100}, 
-    "iron armour":{
-        "Name":"Iron Armour",
-        "Type":"Armour",
-        "Equipable":True, 
-        "Attack Modifier":0,
-        "Wisdom Modifier":0,
-        "Defence Modifier":10,
-        "Dexterity Modifier":0,
-        "Cost":300, 
-        "Sell Price":150}
-    }
+    thing["potion"]["Name"].lower():thing["potion"],
+    thing["iron sword"]["Name"].lower():thing["iron sword"],
+    thing["iron shield"]["Name"].lower():thing["iron shield"],
+    thing["iron armour"]["Name"].lower():thing["iron armour"],
+}
 
 
 default_human = {
