@@ -10,6 +10,7 @@ colorama.init()
 
 # Local files
 import defaultStats
+from itemStats import useUncrackedGeode
 
 # Initialise color theme
 tColor = defaultStats.default_color_theme
@@ -407,11 +408,11 @@ def foundGeode(number):
                 break
 
             case "return":
-                #cprint("You return back to the crossroads\n", tColor['misc'])
-                return 
+                return False
 
             case "help":
                 displayOptions(validInputs)
+    return True
 
 
 def newHighlands():
@@ -450,7 +451,9 @@ def newMines():
     for chanceForGeode in range(2):
         roll = dice(100)
         if roll > 70:
-            foundGeode(chanceForGeode)
+            pickedUp = foundGeode(chanceForGeode)
+            if pickedUp is False:
+                break
     sleep(1)
     cprint("You return back to the crossroads\n", tColor['misc'])
 
@@ -459,10 +462,17 @@ def adventure():
     cprint("Adventure awaits!", tColor['misc'])
     cprint("You find yourself at a crossroad\n", tColor['misc'])
     validInputs = ["wilds", "highlands", "mines", "status", "inventory", "home", "help"]
+    if "Uncracked Geode" in player["Inventory"]:
+        validInputs.insert(0, "crack geode")
     while True:
         displayOptions(validInputs)
         action = playerAction(validInputs, "where")
         match action:
+            case "crack geode":
+                useUncrackedGeode()
+                if "Uncracked Geode" not in player["Inventory"]:
+                    validInputs.remove("crack geode")
+
             case "wilds":
                 # Pick a random monster from the monsterList and battles it
                 # Stops the adventure if the player loses

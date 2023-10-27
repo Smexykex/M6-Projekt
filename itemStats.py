@@ -30,7 +30,6 @@ def useUncrackedGeode():
 thing = {
     "Potion":{
         "Name":"Potion", 
-        "Usable":True, 
         "Cost":30, 
         "Sell Price":20},
     
@@ -123,7 +122,6 @@ thing = {
 
     "Uncracked Geode":{
         "Name":"Uncracked Geode", 
-        "Usable":True, 
         "Sell Price":5}, 
     
     "Quartz Geode":{
