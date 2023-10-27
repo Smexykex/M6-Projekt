@@ -293,8 +293,10 @@ def newHighlands():
 
 
 def newMines():
+    noEvent = True
     chanceForEncounter = dice(100)
     if chanceForEncounter > 20:
+        noEvent = False
         # Start encounter with golem or troll
         whichMonster = random.choice([2, 4])
         result = battle(monsterList[whichMonster])
@@ -306,9 +308,13 @@ def newMines():
     for chanceForGeode in range(2):
         roll = dice(100)
         if roll > 70:
+            noEvent = False
             pickedUp = foundGeode(chanceForGeode)
             if pickedUp is False:
                 break
+    
+    if noEvent is True:
+        cprint("The journey through the abandoned mines is uneventful...", tColor['misc'])
     sleep(1)
     cprint("You return back to the crossroads\n", tColor['misc'])
 
@@ -335,8 +341,9 @@ def adventure():
     validInputs = ["wilds", "highlands", "mines", "status", "inventory",
     "equipment", "equip", "unequip", "home"]
     while True:
-        if itemStats.thing["uncracked geode"] in player["Inventory"]:
-            validInputs.insert(0, "crack geode")
+        if "crack geode" not in validInputs:
+            if itemStats.thing["uncracked geode"] in player["Inventory"]:
+                validInputs.insert(0, "crack geode")
         displayOptions(validInputs)
         action = playerAction(validInputs, "where")
         match action:
@@ -638,7 +645,7 @@ def changeTheme():
  
 def main():
     cprint("\nWelcome to Replies and Ruins!\n", 'light_green')
-    sleep(1)
+    sleep(0.5)
     print("You are in the main menu")
     validInputs = ["start", "change theme", "exit"]
     fullExit = False
