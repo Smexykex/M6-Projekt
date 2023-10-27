@@ -128,6 +128,7 @@ def equip():
     print("\n")
                 
     while True:
+        displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
         if action == "exit":
             return
@@ -158,6 +159,7 @@ def unequip():
     print("\n")
                 
     while True:
+        displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
         if action == "exit":
             return
@@ -210,6 +212,7 @@ def playerTurn(monster):
             print("Player is healed by regenerate\n")
             player["Heal Buff"] -= 1
             
+        displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
         match action:
             case "attack":
@@ -249,8 +252,7 @@ def playerTurn(monster):
                     return
                 
                 else:
-                    cprint("You don't have any potions!\n", tColor['fail'])
-                    
+                    cprint("You don't have any potions!\n", tColor['fail'])  
             
                 print("You use a potion\n")
                 player["Health"] += 50
@@ -273,8 +275,7 @@ def playerTurn(monster):
                     
             case "status":
                 displayStats()
-                    
-                    
+                
             case "help":
                 displayOptions(validInputs)
 
@@ -361,6 +362,7 @@ def foundHerb():
     cprint("You stumble upon a rare herb\n", tColor['misc'])
     validInputs = ["harvest", "return", "help"]
     while True:
+        displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
         match action:
             case "harvest":
@@ -388,6 +390,7 @@ def foundGeode(number):
         cprint("Distracted by the geode you just found, you hit your other foot on another one..", tColor['misc'])
     validInputs = ["take", "return", "help"]
     while True:
+        displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
         match action:
             case "take":
@@ -447,9 +450,9 @@ def newMines():
 def adventure():
     cprint("Adventure awaits!", tColor['misc'])
     cprint("You find yourself at a crossroad\n", tColor['misc'])
-
     validInputs = ["wilds", "highlands", "mines", "status", "inventory", "home", "help"]
     while True:
+        displayOptions(validInputs)
         action = playerAction(validInputs, "where")
         match action:
             case "wilds":
@@ -499,6 +502,7 @@ def buyWares(wares):
             print()
         print()
         
+        displayOptions(validInputs)
         action = playerAction(validInputs, "buy")
         if action == "exit":
             return
@@ -531,6 +535,7 @@ def sellWares():
             print()
         print()
         
+        displayOptions(validInputs)
         action = playerAction(validInputs, "sell")
         if action == "exit":
             return
@@ -545,7 +550,6 @@ def sellWares():
                     player["Coins"] += item["Sell Price"]
                     player["Inventory"].pop(count)
                     break
-    #make a check at some point to see if the chosen item/which items are sellableitems 
     #import sell value 
 
 
@@ -554,6 +558,7 @@ def enterShop(wares):
     
     validInputs = ["buy", "sell", "status", "inventory", "exit", "help"]
     while True:
+        displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
         match action:
             case "buy":
@@ -585,6 +590,7 @@ def game():
     validInputs = ["adventure", "shop", "status", "inventory",
      "equip", "unequip", "main menu", "exit", "help"]
     while True:
+        displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
         match action:
             # Starts an adventure. Restores the players health when they return
@@ -658,6 +664,7 @@ def main():
     validInputs = ["start", "change theme", "exit", "help"]
     fullExit = False
     while True:
+        displayOptions(validInputs)
         menuChoice = playerAction(validInputs, 'misc')
         match menuChoice:
             case "start":
