@@ -33,10 +33,10 @@ alt1_color_theme = {
 
 
 home_shop = {
-    "Potion":{
+    "potion":{
         "Name":"Potion", 
         "Cost":30, "Sell Price":20}, 
-    "Iron Sword":{
+    "iron sword":{
         "Name":"Iron Sword",
         "Type":"Sword",
         "Equipable":True, 
@@ -46,7 +46,7 @@ home_shop = {
         "Dexterity Modifier":0,
         "Cost":150, 
         "Sell Price":75}, 
-    "Iron Shield":{
+    "iron shield":{
         "Name":"Iron Shield",
         "Type":"Shield",
         "Equipable":True, 
@@ -56,7 +56,7 @@ home_shop = {
         "Dexterity Modifier":0,
         "Cost":200, 
         "Sell Price":100}, 
-    "Iron Armour":{
+    "iron armour":{
         "Name":"Iron Armour",
         "Type":"Armour",
         "Equipable":True, 

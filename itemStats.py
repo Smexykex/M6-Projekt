@@ -28,12 +28,12 @@ def useUncrackedGeode():
 # Using item as dict name might screw with stuff in main file
 # Change how it works if you have a better idea
 thing = {
-    "Potion":{
+    "potion":{
         "Name":"Potion", 
         "Cost":30, 
         "Sell Price":20},
     
-    "Bronze Sword":{
+    "bronze sword":{
         "Name":"Bronze Sword",
         "Type":"Sword",
         "Equipable":True, 
@@ -43,7 +43,7 @@ thing = {
         "Dexterity Modifier":0,
         "Sell Price":30},
 
-    "Iron Sword":{
+    "iron sword":{
         "Name":"Iron Sword",
         "Type":"Sword",
         "Equipable":True, 
@@ -54,7 +54,7 @@ thing = {
         "Cost":150, 
         "Sell Price":75}, 
 
-    "Iron Shield":{
+    "iron shield":{
         "Name":"Iron Shield",
         "Type":"Shield",
         "Equipable":True, 
@@ -65,7 +65,7 @@ thing = {
         "Cost":200, 
         "Sell Price":100}, 
 
-    "Iron Armour":{
+    "iron armour":{
         "Name":"Iron Armour",
         "Type":"Armour",
         "Equipable":True, 
@@ -76,7 +76,7 @@ thing = {
         "Cost":300, 
         "Sell Price":150},
     
-    "Wyvernscale Armour":{
+    "wyvernscale armour":{
             "Name":"Wyvernscale Armour",
             "Type":"Armour",
             "Equipable":True, 
@@ -86,7 +86,7 @@ thing = {
             "Dexterity Modifier":5,
             "Sell Price":250},
     
-    "Golem Core":{
+    "golem core":{
             "Name":"Golem Core",
             "Type":"Shield",
             "Equipable":True, 
@@ -96,7 +96,7 @@ thing = {
             "Dexterity Modifier":0,
             "Sell Price":300},
     
-    "Dragon Tooth":{
+    "dragon tooth":{
             "Name":"Dragon Tooth",
             "Type":"Sword",
             "Equipable":True, 
@@ -106,7 +106,7 @@ thing = {
             "Dexterity Modifier":0,
             "Sell Price":300},
     
-    "Troll Club":{
+    "troll club":{
             "Name":"Troll Club",
             "Type":"Sword",
             "Equipable":True, 
@@ -116,19 +116,19 @@ thing = {
             "Dexterity Modifier":-5,
             "Sell Price":200},
     
-    "Rare Herb":{
+    "rare herb":{
         "Name":"Rare Herb", 
         "Sell Price":60},
 
-    "Uncracked Geode":{
+    "uncracked geode":{
         "Name":"Uncracked Geode", 
         "Sell Price":5}, 
     
-    "Quartz Geode":{
+    "quartz qeode":{
         "Name":"Quartz Geode", 
         "Sell Price":25}, 
     
-    "Amethyst Geode":{
+    "amethyst geode":{
         "Name":"Amethyst Geode", 
         "Sell Price":125}, 
 

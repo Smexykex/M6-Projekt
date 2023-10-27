@@ -36,11 +36,13 @@ def playerAction(validInputs, doWhat):
                 playerInput = input("Where would you like to go? ")
             case _: # misc
                 playerInput = input("What would you like to do? ")
-        
         print()
-        # Return the input if it's valid
-        if playerInput in validInputs:
-            return playerInput
+        
+        # Return the input in lower case if it's valid
+        for validInput in validInputs:
+            returnInput = playerInput.lower()
+            if returnInput == validInput.lower():
+                return returnInput
         
         cprint("Invalid input! write 'help' for help\n", tColor['fail'])
 
@@ -85,7 +87,7 @@ def inventoryIndex(checkItem):
 
 def displayOptions(validInputs):
     for string in validInputs[0:-1]:
-        print(string, end='  ')
+        print(string.lower(), end='  ')
     print("\n")
 
 
@@ -99,7 +101,7 @@ def updateStats(equipmentType, sign = 1):
 # Equips an equipment from the inventory. Puts equiped equipment in the inventory
 def equipItem(equipment):
     for count, item in enumerate(player["Inventory"]):
-        if equipment == item["Name"]:
+        if equipment == item["Name"].lower():
             equipmentType = item["Type"] # Type of equipment the player is equiping
             # If the player haven't that type of equipment already equiped
             if player["Equipment"][equipmentType] == None:
@@ -110,7 +112,7 @@ def equipItem(equipment):
                 return
             
             # If the player have that type of equipment already equiped
-            print(f'You replaced {player["Equipment"][equipmentType]["Name"]} with {equipment}\n')
+            print(f'You replaced {player["Equipment"][equipmentType]["Name"]} with {item["Name"]}\n')
             player["Inventory"].append(player["Equipment"][equipmentType])
             updateStats(equipmentType, -1)
                         
@@ -156,11 +158,11 @@ def unequip():
     validInputs = []
     wornEquipmentCount = 0
     
-    for type, item in player["Equipment"].items():
-        if item != None:
-            print('{:<20}'.format(type), end=" ")
+    for equipmentType, equipment in player["Equipment"].items():
+        if equipment != None:
+            print('{:<20}'.format(equipmentType), end=" ")
             wornEquipmentCount += 1
-            validInputs.append(type)
+            validInputs.append(equipmentType)
     validInputs += ["exit", "help"]
     
     if wornEquipmentCount == 0:
@@ -179,6 +181,7 @@ def unequip():
             displayOptions(validInputs)
         
         else:
+            action = action.capitalize()
             print(f'You unequiped {player["Equipment"][action]["Name"]}\n')
             player["Inventory"].append(player["Equipment"][action])
             updateStats(action, -1)
@@ -263,15 +266,7 @@ def playerTurn(monster):
                     return
                 
                 else:
-                    cprint("You don't have any potions!\n", tColor['fail'])  
-            
-                print("You use a potion\n")
-                player["Health"] += 50
-                if player["Health"] > player["Max Health"]:
-                    player["Health"] = player["Max Health"]
-                                    
-                player["Inventory"].pop(inventoryIndex("Potion"))
-                return
+                    cprint("You don't have any potions!\n", tColor['fail'])
             
             case "run":
                 if dice(100) < player["Dexterity"]:
@@ -312,7 +307,7 @@ def gainXp(exp):
             print()
             
             action = playerAction(validInputs, "misc")
-            player[action] += 1
+            player[action.capitalize()] += 1
             statPoints -= 1
 
 
@@ -563,7 +558,7 @@ def sellWares():
         
         else:
             for count, item in enumerate(player["Inventory"]):
-                if action == item["Name"]:
+                if action == item["Name"].lower():
                     print(f'You sold {item["Name"]} for {item["Sell Price"]} coins\n')
                     player["Coins"] += item["Sell Price"]
                     player["Inventory"].pop(count)
