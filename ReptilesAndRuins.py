@@ -42,7 +42,7 @@ def playerAction(validInputs, doWhat):
         if playerInput in validInputs:
             return playerInput
         
-        cprint("Invalid input! write 'help' for help\n", tColor['fail'])
+        cprint("Invalid input! Try again\n", tColor['fail'])
 
 
 def displayStats():
@@ -84,8 +84,8 @@ def inventoryIndex(checkItem):
     
 
 def displayOptions(validInputs):
-    for string in validInputs[0:-1]:
-        print(string, end='  ')
+    for string in validInputs:
+        cprint(string, tColor['choices'], end='  ')
     print("\n")
 
 
@@ -129,27 +129,23 @@ def equip():
             print('{:<20}'.format(item["Name"]), end=" ")
             equipmentCount += 1
             validInputs.append(item["Name"])
-    validInputs += ["exit", "help"]
+    validInputs += ["exit"]
     
     if equipmentCount == 0:
         cprint("You don't have anything to equip!\n", tColor['fail'])
         return
     
     print("\n")
-                
-    while True:
-        displayOptions(validInputs)
-        action = playerAction(validInputs, "misc")
-        match action:
-            case "exit":
-                return
-            
-            case "help":
-                displayOptions(validInputs)
-            
-            case _:
-                equipItem(action)
-                return
+    
+    displayOptions(validInputs)
+    action = playerAction(validInputs, "misc")
+    match action:
+        case "exit":
+            return
+        
+        case _:
+            equipItem(action)
+            return
 
     
 def unequip():
@@ -161,7 +157,7 @@ def unequip():
             print('{:<20}'.format(type), end=" ")
             wornEquipmentCount += 1
             validInputs.append(type)
-    validInputs += ["exit", "help"]
+    validInputs += ["exit"]
     
     if wornEquipmentCount == 0:
         cprint("You don't have anything to unequip!\n", tColor['fail'])
@@ -174,9 +170,6 @@ def unequip():
         action = playerAction(validInputs, "misc")
         if action == "exit":
             return
-        
-        elif action == "help":
-            displayOptions(validInputs)
         
         else:
             print(f'You unequiped {player["Equipment"][action]["Name"]}\n')
@@ -215,7 +208,7 @@ def hasMana(manaCost):
     
     
 def playerTurn(monster):
-    validInputs = ["attack", "fire ball", "frost blast", "regenerate", "use potion", "inventory", "status", "run", "help"]
+    validInputs = ["attack", "fire ball", "frost blast", "regenerate", "use potion", "inventory", "status", "run"]
     while True:
         # Heal the player if they have casted regenerate
         if player["Heal Buff"] > 0:
@@ -286,9 +279,6 @@ def playerTurn(monster):
                     
             case "status":
                 displayStats()
-                
-            case "help":
-                displayOptions(validInputs)
 
 
 def gainXp(exp):
@@ -369,26 +359,19 @@ def battle(monster):
 def foundHerb():
     sleep(1)
     cprint("You stumble upon a rare herb\n", tColor['misc'])
-    validInputs = ["harvest", "return", "help"]
-    while True:
-        displayOptions(validInputs)
-        action = playerAction(validInputs, "misc")
-        match action:
-            case "harvest":
-                chanceForHarvest = dice(100)
-                if chanceForHarvest > 20:
-                    player["Inventory"].append({"Name":"Rare Herb", "Sell Price":50})
-                    cprint("Harvest successful!", tColor['victory'])
-                    cprint( "Rare Herb added to inventory\n", tColor['addItem'])
-                else:
-                    cprint("Harvest unsuccessful, the herb was damaged beyond usability\n", tColor['fail'])
-                break
-
-            case "return":
-                break
-            
-            case "help":
-                displayOptions(validInputs)
+    validInputs = ["harvest", "return"]
+    displayOptions(validInputs)
+    action = playerAction(validInputs, "misc")
+    match action:
+        case "harvest":
+            chanceForHarvest = dice(100)
+            if chanceForHarvest > 20:
+                player["Inventory"].append({"Name":"Rare Herb", "Sell Price":50})
+                cprint("Harvest successful!", tColor['victory'])
+                cprint( "Rare Herb added to inventory\n", tColor['addItem'])
+            else:
+                cprint("Harvest unsuccessful, the herb was damaged beyond usability\n", tColor['fail'])
+    return
 
 
 def foundGeode(number):
@@ -397,7 +380,7 @@ def foundGeode(number):
         cprint("As you are walking, you hit your foot on an unusually light-weight rock.", tColor['misc'])
     else:
         cprint("Distracted by the geode you just found, you hit your other foot on another one..", tColor['misc'])
-    validInputs = ["take", "return", "help"]
+    validInputs = ["take", "return"]
     while True:
         displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
@@ -409,9 +392,6 @@ def foundGeode(number):
 
             case "return":
                 return False
-
-            case "help":
-                displayOptions(validInputs)
     return True
 
 
@@ -461,7 +441,7 @@ def newMines():
 def adventure():
     cprint("Adventure awaits!", tColor['misc'])
     cprint("You find yourself at a crossroad\n", tColor['misc'])
-    validInputs = ["wilds", "highlands", "mines", "status", "inventory", "home", "help"]
+    validInputs = ["wilds", "highlands", "mines", "status", "inventory", "home"]
     if "Uncracked Geode" in player["Inventory"]:
         validInputs.insert(0, "crack geode")
     while True:
@@ -500,16 +480,13 @@ def adventure():
             case "home":
                 cprint("You return home\n", tColor['misc'])
                 return
-            
-            case "help":
-                displayOptions(validInputs)
 
 
 def buyWares(wares):
     validInputs = []
     for item in wares.keys():
         validInputs.append(item)
-    validInputs += ["exit", "help"]
+    validInputs += ["exit"]
     
     while True:
         cprint(f"You have {player['Coins']} coins.", tColor['listSomething'])
@@ -525,9 +502,6 @@ def buyWares(wares):
         if action == "exit":
             return
         
-        elif action == "help":
-            displayOptions(validInputs)
-        
         else:
             if wares[action]["Cost"] <= player["Coins"]:
                 cprint(f'You bought {wares[action]["Name"]}\n', tColor['addItem'])
@@ -542,7 +516,7 @@ def sellWares():
     validInputs = []
     for item in player["Inventory"]:
         validInputs.append(item["Name"])
-    validInputs += ["exit", "help"]
+    validInputs += ["exit"]
     
     while True:
         cprint(f"You have {player['Coins']} coins.", tColor['listSomething'])
@@ -558,9 +532,6 @@ def sellWares():
         if action == "exit":
             return
         
-        elif action == "help":
-            displayOptions(validInputs)
-        
         else:
             for count, item in enumerate(player["Inventory"]):
                 if action == item["Name"]:
@@ -572,9 +543,10 @@ def sellWares():
 
 
 def enterShop(wares):
-    cprint("Welcome to my shop!\n", tColor['dialogue'])
+    # Weird symbols makes text cursive
+    cprint("\x1B[3m Welcome to my shop! \x1B[0m \n", tColor['dialogue'])
     
-    validInputs = ["buy", "sell", "status", "inventory", "exit", "help"]
+    validInputs = ["buy", "sell", "status", "inventory", "exit"]
     while True:
         displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
@@ -592,12 +564,9 @@ def enterShop(wares):
                 displayInventory()
                 
             case "exit":
-                cprint("Come again!\n", tColor['dialogue'])
+                cprint("\x1B[3m Come again! \x1B[0m \n", tColor['dialogue'])
                 return
-            
-            case "help":
-                displayOptions(validInputs)
-    
+
 
 def game():
     # Initiate Player stats
@@ -606,7 +575,7 @@ def game():
     cprint("---Game initialised---\n", 'light_green', attrs=["bold"])
     
     validInputs = ["adventure", "shop", "status", "inventory",
-     "equip", "unequip", "main menu", "exit", "help"]
+     "equip", "unequip", "main menu", "exit"]
     while True:
         displayOptions(validInputs)
         action = playerAction(validInputs, "misc")
@@ -640,46 +609,35 @@ def game():
             case "exit":
                 cprint("Exited game", 'green')
                 return True
-            
-            case "help":
-                displayOptions(validInputs)
 
 
 def changeTheme():
     global tColor
-    validInputs = ["default", "alternate", "back", "help"]
+    validInputs = ["default", "alternate", "back"]
     cprint("Available themes: ", tColor['misc'])
     displayOptions(validInputs)
-    while True:
-        menuChoice = playerAction(validInputs, tColor['misc'])
-        match menuChoice:
-            case "default":
-                tColor = defaultStats.default_color_theme
-                cprint("Color theme set to default", tColor['misc'])
-                sleep(1)
-                cprint("Returned to main menu", tColor['misc'])
-                return
 
-            case "alternate":
-                tColor = defaultStats.alt1_color_theme
-                cprint("Color theme set to alternate", tColor['misc'])
-                sleep(1)
-                cprint("Returned to main menu", tColor['misc'])
-                return
-            
-            case "back":
-                cprint("Returned to main menu", tColor['misc'])
-                return
+    menuChoice = playerAction(validInputs, tColor['misc'])
+    match menuChoice:
+        case "default":
+            tColor = defaultStats.default_color_theme
+            cprint("Color theme set to default\n", tColor['misc'])
 
-            case "help":
-                displayOptions(validInputs)
+        case "alternate":
+            tColor = defaultStats.alt1_color_theme
+            cprint("Color theme set to alternate\n", tColor['misc'])
+        
+    sleep(0.5)
+    cprint("Returned to main menu", tColor['misc'])
+    return
+
 
  
 def main():
     cprint("\nWelcome to Replies and Ruins!\n", 'light_green')
+    sleep(1)
     print("You are in the main menu")
-    print("type 'help' for a list of avalible commands!\n")
-    validInputs = ["start", "change theme", "exit", "help"]
+    validInputs = ["start", "change theme", "exit"]
     fullExit = False
     while True:
         displayOptions(validInputs)
@@ -694,9 +652,6 @@ def main():
             case "exit":
                 cprint("Exited game", 'green')
                 return
-            
-            case "help":
-                displayOptions(validInputs)
             
         if fullExit is True:
             break
