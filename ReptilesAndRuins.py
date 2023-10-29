@@ -15,16 +15,16 @@ import itemStats
 # Initialise color theme
 tColor = defaultStats.default_color_theme
 
-# Could be initialised locally if you want to pass
-#  the dictionary between all of the relevant functions
 global monsterList
 monsterList = defaultStats.default_monsterList
 
 
+# Returns a number between 1 and a given number
 def dice(upperNumber):
     return random.randint(1, upperNumber)
 
 
+# Returns the players action (a string) if the action is in the given list of valid actions
 def playerAction(validInputs, doWhat):
     while True:
         match doWhat:
@@ -34,6 +34,8 @@ def playerAction(validInputs, doWhat):
                 playerInput = input("What would you like to sell? ")
             case "where":
                 playerInput = input("Where would you like to go? ")
+            case "attribute":
+                playerInput = input("What attribute would you like to increase? ")
             case _: # misc
                 playerInput = input("What would you like to do? ")
         print()
@@ -47,6 +49,7 @@ def playerAction(validInputs, doWhat):
         cprint("Invalid input! Try again\n", tColor['fail'])
 
 
+# Displays the players stats
 def displayStats():
     for stat, value in player.items():
         # We don't display some player data
@@ -59,6 +62,7 @@ def displayStats():
     print()
 
 
+# Displays the players inventory
 def displayInventory():
     print('Coins:' + '{:^20}'.format(player["Coins"]))
     
@@ -69,6 +73,7 @@ def displayInventory():
     print()
 
 
+# Displays the players equipment
 def displayEquipment():
     for equipmentType, equipment in player["Equipment"].items():
         if equipment != None:
@@ -78,12 +83,14 @@ def displayEquipment():
     print()
     
 
+# Displays the players current valid inputs
 def displayOptions(validInputs):
     for string in validInputs:
         cprint(string.lower(), tColor['choices'], end='  ')
     print("\n")
 
-    
+
+# An attack against an opponent
 def attack(attacker, reciver):
     # Every point of dexterity increaces your dodge chance by 1%, starting at 0%
     hit = dice(100) > reciver["Dexterity"]
@@ -95,14 +102,18 @@ def attack(attacker, reciver):
         if damageTaken < 0:
             damageTaken = 0
         reciver["Health"] -= damageTaken
-        print(f'{attacker["type"]} deals {damageTaken} damage to {reciver["type"]}!\n')
+        print(f'{attacker["type"]} deals {damageTaken} damage to {reciver["type"]}\n')
         
     else:
         print(f'{attacker["type"]} missed {reciver["type"]}!\n')
         
+
+# The players turn in a battle
+def playerTurn(monster, canRun = True):
+    validInputs = ["attack", "fire ball", "frost blast", "regenerate", "use potion", "inventory", "status"]
+    if canRun:
+        validInputs += ["run"]
     
-def playerTurn(monster):
-    validInputs = ["attack", "fire ball", "frost blast", "regenerate", "use potion", "inventory", "status", "run"]
     while True:
         # Heal the player if they have casted regenerate
         if player["Heal Buff"] > 0:
@@ -145,7 +156,7 @@ def playerTurn(monster):
                 if dice(100) < player["Dexterity"]:
                     cprint("You successfully run away\n", 'yellow')
                     return "ran away"
-                
+                    
                 cprint("You failed to run away!\n", tColor['fail'])
                 return
                 
@@ -156,57 +167,71 @@ def playerTurn(monster):
                 displayStats()
 
 
+# What happens when the player gains experience
 def gainXp(exp):
     player["Experience"] += exp
+    
+    # If the player levels up
     if player["Experience"] >= player["Next level"]:
         print("Level up!\n")
         player["Experience"] -= player["Next level"]
-        player["Level"] += 1
-        player["Next level"] = round(player["Next level"] * 1.1)
         player["Max Health"] += 10
+        player["Level"] += 1
+        # The next level requires 10% more experience then the last
+        player["Next level"] = round(player["Next level"] * 1.1)
         
+        # Selection of which attributes to increase
         statPoints = 5
-        validInputs = ["Attack", "Wisdom", "Defence", "Dexterity"]
-        print("---Select which stats you would like to increase---\n")
+        validInputs = ["1", "2", "3", "4"]
+        attributes = ["Attack", "Wisdom", "Defence", "Dexterity"]
         while statPoints > 0:
-            for stat, value in player.items():
-                if stat in validInputs:
-                    print('{:<10}'.format(stat), end=':')
-                    print('{:>10}'.format(value), end='')
+            cprint("<Attributes you can increase>\n", tColor['listSomething'])
+            for count, stat in enumerate(player.keys()):
+                if stat in attributes:
+                    print('{:<13}'.format(f'{count-10}) {stat}'), end=':')
+                    print('{:>6}'.format(player[stat]), end='')
                     print()
             print()
             
-            action = playerAction(validInputs, "misc")
-            player[action.capitalize()] += 1
+            action = playerAction(validInputs, "attribute")
+            player[attributes[int(action) - 1]] += 1
             statPoints -= 1
 
 
-# Returns "defeat" if the player lost the battle and "ran away" if they ran form the battle
-def battle(monster):
-    tempMonster = dict(monster)
+# Starts battle against a monster
+# Returns "defeat" if the player lost the battle and "ran away" if they ran from the battle
+def battle(monster, canRun = True):
+    tempMonster = dict(monster) # Copy of monster
     cprint(f"You encounter a {tempMonster['type']}!",tColor['newEnemy'], 'on_black', attrs=['bold'])
-    print() #needs this instead of backslash n to cut background color off
+    print() # Needs this instead of backslash n to cut background color off
     sleep(2)
     
     while True:
+        print("-"*30)
+        print(f'Player -- Health: [{player["Health"]}/{player["Max Health"]}] Mana: [{player["Mana"]}/{player["Max Mana"]}]')
+        print(f'Monster -- Health: [{tempMonster["Health"]}/{tempMonster["Max Health"]}]\n')
         # Player's turn
-        turn = playerTurn(tempMonster)
+        turn = playerTurn(tempMonster, canRun)
         sleep(0.3)
         
+        # The battle is won if the monster has less than 0 health 
         if tempMonster["Health"] <= 0:
             cprint("Victory!", tColor['victory'])
-            cprint(f"{tempMonster['Coins']} coins have been acquired!\n", tColor['addItem'])
+            cprint(f"{tempMonster['Coins']} coins have been acquired\n", tColor['addItem'])
             
             player["Coins"] += tempMonster["Coins"]
             sleep(0.3)
+            # 20% chance of getting a drop from the monster
             chanceForDrop = dice(100)
-            if chanceForDrop <= 10:
+            if chanceForDrop <= tempMonster["Drop Rate"]:
                 print(f'{tempMonster["type"]} dropped {tempMonster["Drop"]["Name"]}\n')
                 player["Inventory"].append(tempMonster["Drop"])
-            
+                
             sleep(0.3)
+            
+            # Gain experience
             gainXp(tempMonster["Experience gain"])
-            return
+            return "victory"
         
         elif turn == "ran away":
             return "ran away"
@@ -215,8 +240,10 @@ def battle(monster):
         # Monster attacks
         attack(tempMonster, player)
         sleep(0.3)
+        
+        # The battle is lost if the player has less than 0 health
         if player["Health"] <= 0:
-            cprint("Defeat! You lost 50 coins!\n", tColor['fail'])
+            cprint("Defeat! You lost 50 coins\n", tColor['fail'])
             player["Coins"] -= 50
             if player["Coins"] < 0:
                 player["Coins"] = 0
@@ -231,6 +258,30 @@ def battle(monster):
             player["Mana"] = player["Max Mana"]
 
 
+# Boss battle
+def bossBattle():
+    result = battle(dict(monsterList[5]), False) # Can't run from the battle
+    if result == "defeat":
+        return "defeat"
+    
+    sleep(0.3)
+    validInputs = ["demon sword", "demon shield", "demon armour"]
+    
+    cprint("The demon's head pulsates with magic. You get the feeling you can change it's shape to suit your needs\n", tColor['lore'])
+    cprint("<Equipment you can make>\n", tColor['listSomething'])
+    for equipment in validInputs:
+        print('{:<13}'.format(f'{itemStats.thing[equipment]["Name"]}'), end=' ')
+    print("\n")
+    
+    displayOptions(validInputs)
+    action = playerAction(validInputs, "misc")
+    # Removes the demon head from the players inventory and adds the crafted equipment
+    print(f'You created {itemStats.thing[action]["Name"]}\n')
+    player["Inventory"].pop(itemStats.inventoryIndex(player, "Demon Head"))
+    player["Inventory"].append(itemStats.thing[action])
+
+    
+# When the player finds a herb
 def foundHerb():
     sleep(1)
     cprint("You stumble upon a rare herb\n", tColor['misc'])
@@ -249,6 +300,7 @@ def foundHerb():
     return
 
 
+# When the player finds a geode
 def foundGeode(number):
     sleep(1)
     if number == 0:
@@ -270,6 +322,7 @@ def foundGeode(number):
     return True
 
 
+# Enter highlands
 def newHighlands():
     chanceForEncounter = dice(100)
     chanceForHerb = dice(100)
@@ -292,6 +345,7 @@ def newHighlands():
     cprint("You return back to the crossroads\n", tColor['misc'])
 
 
+# Enter mines
 def newMines():
     noEvent = True
     chanceForEncounter = dice(100)
@@ -319,6 +373,7 @@ def newMines():
     cprint("You return back to the crossroads\n", tColor['misc'])
 
 
+# Opens a uncracked geode from the players inventory
 def useUncrackedGeode(player):
     player["Inventory"].remove(itemStats.thing["uncracked geode"])
     cprint("You hit the uncracked geode against a nearby boulder.", tColor["misc"])
@@ -335,11 +390,19 @@ def useUncrackedGeode(player):
     return
 
 
+# Restores the player's health and mana
+def restoreStats():
+    player["Health"] = player["Max Health"]
+    player["Mana"] = player["Max Mana"]
+    
+
+# Starts an adventure
 def adventure():
     cprint("Adventure awaits!", tColor['misc'])
     cprint("You find yourself at a crossroad\n", tColor['misc'])
-    validInputs = ["wilds", "highlands", "mines", "status", "inventory",
+    validInputs = ["wilds", "highlands", "mines", "boss", "status", "inventory",
     "equipment", "equip", "unequip", "home"]
+    
     while True:
         if "crack geode" not in validInputs:
             if itemStats.thing["uncracked geode"] in player["Inventory"]:
@@ -357,18 +420,25 @@ def adventure():
                 # Stops the adventure if the player loses
                 randomMonster = monsterList[random.randint(1, 3)]
                 result = battle(randomMonster.copy())
+                restoreStats()
                 if result == "defeat":
                     return
             
             case "highlands":
                 result = newHighlands()
+                restoreStats()
                 if result == "defeat":
                     return
             
             case "mines":
                 result = newMines()
+                restoreStats()
                 if result == "defeat":
                     return
+            
+            case "boss":
+                bossBattle()
+                return
             
             case "status":
                 displayStats()
@@ -390,6 +460,7 @@ def adventure():
                 return
 
 
+# Updates the stats of the player when they remove equipment
 def updateStats(equipmentType, sign = 1):
     player["Attack"] += player["Equipment"][equipmentType]["Attack Modifier"] * sign
     player["Wisdom"] += player["Equipment"][equipmentType]["Wisdom Modifier"] * sign
@@ -420,7 +491,8 @@ def equipItem(equipment):
             player["Inventory"].pop(count)
             return
 
-    
+
+# Equip/Swap equipment
 def equip():
     validInputs = []
     equipmentCount = 0
@@ -448,7 +520,8 @@ def equip():
             equipItem(action)
             return
 
-    
+
+# Remove equipment
 def unequip():
     validInputs = []
     wornEquipmentCount = 0
@@ -481,6 +554,7 @@ def unequip():
             return
 
 
+# Buy wares from shop
 def buyWares(wares):
     validInputs = []
     for item in wares.keys():
@@ -511,6 +585,7 @@ def buyWares(wares):
                 cprint("You don't have enough money!\n", tColor['fail'])
 
 
+# Sell wares in shop
 def sellWares():
     validInputs = []
     for item in player["Inventory"]:
@@ -540,6 +615,7 @@ def sellWares():
     #import sell value 
 
 
+# Enters shop
 def enterShop(wares):
     # Weird symbols makes text cursive
     cprint("\x1B[3m Welcome to my shop! \x1B[0m \n", tColor['dialogue'])
@@ -575,6 +651,7 @@ def enterShop(wares):
                 return
 
 
+# Starts the game
 def game():
     # Initiate Player stats
     global player
@@ -590,8 +667,6 @@ def game():
             # Starts an adventure. Restores the players health when they return
             case "adventure":
                 adventure()
-                player["Health"] = player["Max Health"]
-                player["Mana"] = player["Max Mana"]
             
             case "shop":
                 wares = defaultStats.home_shop
@@ -621,6 +696,7 @@ def game():
                 return True
 
 
+# Changes color theme
 def changeTheme():
     global tColor
     validInputs = ["default", "alternate", "back"]
@@ -642,7 +718,6 @@ def changeTheme():
     return
 
 
- 
 def main():
     cprint("\nWelcome to Replies and Ruins!\n", 'light_green')
     sleep(0.5)

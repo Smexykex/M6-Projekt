@@ -142,11 +142,41 @@ thing = {
             "Name":"Troll Club",
             "Type":"Sword",
             "Equipable":True, 
-            "Attack Modifier":35,
+            "Attack Modifier":30,
             "Wisdom Modifier":0,
             "Defence Modifier":0,
             "Dexterity Modifier":-5,
-            "Sell Price":200},
+            "Sell Price":100},
+    
+    "demon armour":{
+            "Name":"Demon Armour",
+            "Type":"Armour",
+            "Equipable":True, 
+            "Attack Modifier":0,
+            "Wisdom Modifier":10,
+            "Defence Modifier":15,
+            "Dexterity Modifier":10,
+            "Sell Price":500},
+    
+    "demon sword":{
+            "Name":"Demon Sword",
+            "Type":"Sword",
+            "Equipable":True, 
+            "Attack Modifier":45,
+            "Wisdom Modifier":10,
+            "Defence Modifier":0,
+            "Dexterity Modifier":5,
+            "Sell Price":500},
+    
+    "demon shield":{
+            "Name":"Demon Shield",
+            "Type":"Shield",
+            "Equipable":True, 
+            "Attack Modifier":5,
+            "Wisdom Modifier":10,
+            "Defence Modifier":20,
+            "Dexterity Modifier":0,
+            "Sell Price":500},
     
     "rare herb":{
         "Name":"Rare Herb", 
@@ -162,6 +192,10 @@ thing = {
     
     "amethyst geode":{
         "Name":"Amethyst Geode", 
-        "Sell Price":125}, 
+        "Sell Price":125},
+    
+    "demon head":{
+        "Name":"Demon Head", 
+        "Sell Price":1}
 
 }

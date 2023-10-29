@@ -50,7 +50,7 @@ default_human = {
         "Sword":thing["bronze sword"],
         "Shield":None,
         "Armour":None},
-    "Coins":200,
+    "Coins":120,
     "Level":1,
     "Experience":0,
     "Next level":100,
@@ -60,8 +60,8 @@ default_human = {
     "Mana":100,
     "Attack":40,
     "Wisdom":20,
-    "Defence":10,
-    "Dexterity":30,
+    "Defence":20,
+    "Dexterity":20,
     "Heal Buff":0
 }
 
@@ -69,42 +69,62 @@ default_human = {
 default_monsterList = {
     1:{
         "type":"Wyvern",
+        "Max Health":150,
         "Health":150,
-        "Attack":30,
+        "Attack":35,
         "Defence":15,
         "Dexterity":50,
         "Coins":50,
-        "Experience gain":35,
+        "Experience gain":50,
+        "Drop Rate":25,
         "Drop":thing["wyvernscale armour"]
         },
     2:{
         "type":"Golem",
+        "Max Health":250,
         "Health":250,
         "Attack":30,
-        "Defence":30,
+        "Defence":25,
         "Dexterity":0,
         "Coins":75,
         "Experience gain":75,
+        "Drop Rate":25,
         "Drop":thing["golem core"]
         },
     3:{
         "type":"Dragon",
+        "Max Health":250,
         "Health":250,
         "Attack":40,
         "Defence":20,
         "Dexterity":15,
         "Coins":100,
-        "Experience gain":80,
+        "Experience gain":100,
+        "Drop Rate":25,
         "Drop":thing["dragon tooth"]
         },
     4:{
         "type":"Troll",
-        "Health":90,
+        "Max Health":120,
+        "Health":120,
         "Attack":40,
         "Defence":25,
         "Dexterity":20,
         "Coins":25,
         "Experience gain":25,
+        "Drop Rate":25,
         "Drop":thing["troll club"]
+        },
+    5:{
+        "type":"Demon",
+        "Max Health":500,
+        "Health":500,
+        "Attack":60,
+        "Defence":45,
+        "Dexterity":30,
+        "Coins":500,
+        "Experience gain":400,
+        "Drop Rate":100,
+        "Drop":thing["demon head"]
         }
 }
