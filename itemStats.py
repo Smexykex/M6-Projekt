@@ -8,36 +8,42 @@
 # Checks if the player can cast a spell.
 # If they can, return True and subtract the mana cost from the players mana
 def hasMana(player, manaCost):
-    if player["Mana"] >= manaCost:
-        player["Mana"] -= manaCost
-        if player["Mana"] < 0:
-            player["Mana"] = 0
-        return True
+    if player["Mana"] < manaCost:
+        return False
+    
+    player["Mana"] -= manaCost
+    return True
     
 
 def castFireBall(player, monster):
-    if hasMana(player, 45):
-        damage = 15 + player["Wisdom"]
-        monster["Health"] -= damage
-        print(f'Player casts fire ball on {monster["type"]} and deals {damage} damage\n')
-        return True
+    if not hasMana(player, 45):
+        return False
+    
+    damage = 15 + player["Wisdom"]
+    monster["Health"] -= damage
+    print(f'Player casts fire ball on {monster["type"]} and deals {damage} damage\n')
+    return True
 
 
 def castFrostBlast(player, monster):
-    if hasMana(player, 30):
-        damage = 10 + player["Wisdom"] // 2
-        monster["Health"] -= damage
-        monster["Dexterity"] -= 5
-        print(f'Player casts frost blast on {monster["type"]} and deals {damage} damage')
-        print(f'{monster["type"]} now has {monster["Dexterity"]} dexterity\n')
-        return True
+    if not hasMana(player, 30):
+        return False
+    
+    damage = 10 + player["Wisdom"] // 2
+    monster["Health"] -= damage
+    monster["Dexterity"] -= 5
+    print(f'Player casts frost blast on {monster["type"]} and deals {damage} damage')
+    print(f'{monster["type"]} now has {monster["Dexterity"]} dexterity\n')
+    return True
 
 
 def castRegenerate(player):
-    if hasMana(player, 80):
-        player["Heal Buff"] = 3 + player["Wisdom"] // 15
-        print("Player casts regenerate\n")
-        return True
+    if not hasMana(player, 80):
+        return False
+    
+    player["Heal Buff"] = 3 + player["Wisdom"] // 15
+    print("Player casts regenerate\n")
+    return True
 
 
 # Returns the index of a item in the inventory. Retruns None otherwise
@@ -49,13 +55,15 @@ def inventoryIndex(player, checkItem):
 
 def usePotion(player):
     index = inventoryIndex(player, "Potion")
-    if index != None:
-        print("You use a potion\n")
-        player["Inventory"].pop(index)
-        player["Health"] += 50
-        if player["Health"] > player["Max Health"]:
-            player["Health"] = player["Max Health"]
-        return True
+    if index == None:
+        return False
+    
+    print("You use a potion\n")
+    player["Inventory"].pop(index)
+    player["Health"] += 50
+    if player["Health"] > player["Max Health"]:
+        player["Health"] = player["Max Health"]
+    return True
 
 
 # Using item as dict name might screw with stuff in main file

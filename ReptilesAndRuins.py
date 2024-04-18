@@ -1,4 +1,5 @@
 import random
+import json
 # Add manual delay with sleep(), argument is ~seconds to wait
 from time import sleep
 
@@ -473,8 +474,11 @@ def equipItem(equipment):
     for count, item in enumerate(player["Inventory"]):
         if equipment == item["Name"].lower():
             equipmentType = item["Type"] # Type of equipment the player is equiping
+            try:
+                player["Equipment"][equipmentType]
+                
             # If the player haven't that type of equipment already equiped
-            if player["Equipment"][equipmentType] == None:
+            except:
                 print(f'You equiped {equipment}\n')
                 player["Equipment"][equipmentType] = item
                 updateStats(equipmentType)
@@ -482,14 +486,15 @@ def equipItem(equipment):
                 return
             
             # If the player have that type of equipment already equiped
-            print(f'You replaced {player["Equipment"][equipmentType]["Name"]} with {item["Name"]}\n')
-            player["Inventory"].append(player["Equipment"][equipmentType])
-            updateStats(equipmentType, -1)
-                        
-            player["Equipment"][equipmentType] = item
-            updateStats(equipmentType)
-            player["Inventory"].pop(count)
-            return
+            else:
+                print(f'You replaced {player["Equipment"][equipmentType]["Name"]} with {item["Name"]}\n')
+                player["Inventory"].append(player["Equipment"][equipmentType])
+                updateStats(equipmentType, -1)
+                            
+                player["Equipment"][equipmentType] = item
+                updateStats(equipmentType)
+                player["Inventory"].pop(count)
+                return
 
 
 # Equip/Swap equipment
@@ -527,10 +532,9 @@ def unequip():
     wornEquipmentCount = 0
     
     for equipmentType, equipment in player["Equipment"].items():
-        if equipment != None:
-            print('{:<20}'.format(equipmentType), end=" ")
-            wornEquipmentCount += 1
-            validInputs.append(equipmentType)
+        print('{:<20}'.format(equipmentType), end=" ")
+        wornEquipmentCount += 1
+        validInputs.append(equipmentType)
     validInputs += ["exit"]
     
     if wornEquipmentCount == 0:
@@ -550,7 +554,7 @@ def unequip():
             print(f'You unequiped {player["Equipment"][action]["Name"]}\n')
             player["Inventory"].append(player["Equipment"][action])
             updateStats(action, -1)
-            player["Equipment"][action] = None
+            player["Equipment"].pop(action)
             return
 
 
@@ -652,10 +656,7 @@ def enterShop(wares):
 
 
 # Starts the game
-def game():
-    # Initiate Player stats
-    global player
-    player = defaultStats.default_human
+def game():    
     cprint("---Game initialised---\n", 'light_green', attrs=["bold"])
     
     validInputs = ["adventure", "shop", "status", "inventory", "equipment",
@@ -688,10 +689,20 @@ def game():
                 unequip()
             
             case "main menu":
+                # Save player
+                savedPlayer = json.dumps(player, indent=4)
+                with open("player_stats.json", "w") as statsFile:
+                    statsFile.write(savedPlayer)
+                
                 cprint("Exited to main menu", 'green')
                 return False
             
             case "exit":
+                # Save player
+                savedPlayer = json.dumps(player, indent=4)
+                with open("player_stats.json", "w") as statsFile:
+                    statsFile.write(savedPlayer)
+                
                 cprint("Exited game", 'green')
                 return True
 
@@ -722,15 +733,23 @@ def main():
     cprint("\nWelcome to Replies and Ruins!\n", 'light_green')
     sleep(0.5)
     print("You are in the main menu")
-    validInputs = ["start", "change theme", "exit"]
+    validInputs = ["new game", "resume game", "change theme", "exit"]
     fullExit = False
+    global player
     while True:
         displayOptions(validInputs)
         menuChoice = playerAction(validInputs, 'misc')
         match menuChoice:
-            case "start":
+            case "new game":
+                player = defaultStats.default_player
                 fullExit = game()
             
+            case "resume game":
+                with open('player_stats.json', 'r') as statsFile:
+                    player = json.load(statsFile)
+                
+                fullExit = game()
+                
             case "change theme":
                 changeTheme()
             

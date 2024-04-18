@@ -43,13 +43,12 @@ home_shop = {
 }
 
 
-default_human = {
+default_player = {
     "type":"Player",
     "Inventory":[],
     "Equipment":{
         "Sword":thing["bronze sword"],
-        "Shield":None,
-        "Armour":None},
+    },
     "Coins":120,
     "Level":1,
     "Experience":0,

@@ -1,0 +1,29 @@
+{
+    "type": "Player",
+    "Inventory": [],
+    "Equipment": {
+        "Sword": {
+            "Name": "Bronze Sword",
+            "Type": "Sword",
+            "Equipable": true,
+            "Attack Modifier": 20,
+            "Wisdom Modifier": 0,
+            "Defence Modifier": 0,
+            "Dexterity Modifier": 0,
+            "Sell Price": 30
+        }
+    },
+    "Coins": 120,
+    "Level": 1,
+    "Experience": 0,
+    "Next level": 100,
+    "Max Health": 150,
+    "Max Mana": 100,
+    "Health": 150,
+    "Mana": 100,
+    "Attack": 40,
+    "Wisdom": 20,
+    "Defence": 20,
+    "Dexterity": 20,
+    "Heal Buff": 0
+}
